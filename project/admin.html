@@ -1,0 +1,1132 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Rewards Admin - ระบบจัดการ</title>
+    <meta name="description" content="admin Food Rewards" />
+    <meta name="author" content="T42" />
+    <meta property="og:title" content="admin Food Rewards-iton5-thailand" />
+    <meta property="og:description" content="admin Food Rewards" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://lh3.googleusercontent.com/d/1iC3WIZLbnrjAlcMXqFk1bQ-jiVQhTuci" />
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <link rel="stylesheet" href="https://bit.ly/fontiton5" type="text/css" charset="utf-8" />
+    <style>
+        :root {
+            --primary: #1ea896;
+            --secondary: #ff715b;
+            --success: #28a745;
+            --danger: #dc3545;
+            --warning: #ffc107;
+            --info: #17a2b8;
+            --light: #f8f9fa;
+            --dark: #343a40;
+            --white: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'line_seed_sans_th';
+        }
+
+        body {
+            background-color: var(--light);
+            color: var(--dark);
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: 250px;
+            background-color: var(--dark);
+            color: var(--white);
+            z-index: 1000;
+            overflow-y: auto;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar.collapsed {
+            transform: translateX(-250px);
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            background-color: var(--primary);
+            text-align: center;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar-menu li {
+            border-bottom: 1px solid #495057;
+        }
+
+        .sidebar-menu a {
+            display: block;
+            padding: 15px 20px;
+            color: var(--white);
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background-color: var(--primary);
+        }
+
+        .sidebar-menu i {
+            margin-right: 10px;
+            width: 20px;
+        }
+
+        .main-content {
+            margin-left: 250px;
+            min-height: 100vh;
+            transition: margin-left 0.3s ease;
+        }
+
+        .main-content.expanded {
+            margin-left: 0;
+        }
+
+        .topbar {
+            background-color: var(--white);
+            padding: 15px 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .topbar-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .sidebar-toggle {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            color: var(--dark);
+            cursor: pointer;
+            margin-right: 15px;
+        }
+
+        .content {
+            padding: 20px;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .card {
+            background-color: var(--white);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .card-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid #dee2e6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, var(--primary), #16a085);
+            color: var(--white);
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .stat-card.secondary {
+            background: linear-gradient(135deg, var(--secondary), #e74c3c);
+        }
+
+        .stat-card.success {
+            background: linear-gradient(135deg, var(--success), #27ae60);
+        }
+
+        .stat-card.warning {
+            background: linear-gradient(135deg, var(--warning), #f39c12);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: var(--white);
+            font-size: 0.9rem;
+        }
+
+        .table th,
+        .table td {
+            padding: 12px 8px;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+            vertical-align: middle;
+            height: 60px;
+        }
+
+        .table th {
+            background-color: var(--light);
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 0.9rem;
+            transition: background-color 0.3s;
+            margin: 2px;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: var(--white);
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary);
+            color: var(--white);
+        }
+
+        .btn-success {
+            background-color: var(--success);
+            color: var(--white);
+        }
+
+        .btn-danger {
+            background-color: var(--danger);
+            color: var(--white);
+        }
+
+        .btn-info {
+            background-color: var(--info);
+            color: var(--white);
+        }
+
+        .btn-sm {
+            padding: 4px 8px;
+            font-size: 0.8rem;
+        }
+
+        .btn-lg {
+            padding: 12px 24px;
+            font-size: 1.1rem;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(30, 168, 150, 0.2);
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+
+        .modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background-color: var(--white);
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid #dee2e6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .modal-footer {
+            padding: 20px;
+            border-top: 1px solid #dee2e6;
+            text-align: right;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #6c757d;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-bottom: 20px;
+        }
+
+        .badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .badge-success {
+            background-color: var(--success);
+            color: var(--white);
+        }
+
+        .badge-danger {
+            background-color: var(--danger);
+            color: var(--white);
+        }
+
+        .badge-warning {
+            background-color: var(--warning);
+            color: var(--dark);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #6c757d;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .alert {
+            padding: 12px 16px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            margin: -10px;
+        }
+
+        .col {
+            flex: 1;
+            padding: 10px;
+            min-width: 300px;
+        }
+
+        .col-6 {
+            flex: 0 0 50%;
+            padding: 10px;
+            min-width: 300px;
+        }
+
+        .col-4 {
+            flex: 0 0 33.333%;
+            padding: 10px;
+            min-width: 250px;
+        }
+
+        .col-3 {
+            flex: 0 0 25%;
+            padding: 10px;
+            min-width: 200px;
+        }
+
+        .user-search-section {
+            background-color: var(--light);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .search-methods {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .search-method {
+            text-align: center;
+            padding: 20px;
+            background-color: var(--white);
+            border-radius: 8px;
+            border: 2px solid #dee2e6;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .search-method:hover,
+        .search-method.active {
+            border-color: var(--primary);
+            background-color: rgba(30, 168, 150, 0.1);
+        }
+
+        .search-method i {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .qr-scanner {
+            text-align: center;
+            padding: 20px;
+            border: 2px dashed var(--primary);
+            border-radius: 8px;
+            background-color: var(--white);
+        }
+
+        #qr-reader {
+            width: 100%;
+            max-width: 300px;
+            margin: 0 auto;
+        }
+
+        .analytics-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .download-section {
+            background-color: var(--light);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .download-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+        }
+
+        .text-success {
+            color: var(--success) !important;
+        }
+
+        .text-danger {
+            color: var(--danger) !important;
+        }
+
+        .mobile-hidden {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-250px);
+            }
+
+            .sidebar.show {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+
+            .row {
+                flex-direction: column;
+            }
+
+            .col-6,
+            .col-4,
+            .col-3 {
+                flex: 1;
+                min-width: auto;
+            }
+
+            .col {
+                min-width: auto;
+            }
+
+            .card-header {
+                flex-direction: column;
+                align-items: stretch;
+                text-align: center;
+            }
+
+            .search-methods {
+                grid-template-columns: 1fr;
+            }
+
+            .analytics-actions {
+                justify-content: center;
+            }
+
+            .download-options {
+                grid-template-columns: 1fr;
+            }
+
+            .table {
+                font-size: 0.8rem;
+            }
+
+            .table th,
+            .table td {
+                padding: 8px 4px;
+            }
+
+            .mobile-hidden {
+                display: none;
+            }
+
+            .chart-container {
+                height: 250px;
+            }
+
+            .modal-content {
+                width: 95%;
+                margin: 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .content {
+                padding: 10px;
+            }
+
+            .card-body {
+                padding: 15px;
+            }
+
+            .btn {
+                padding: 6px 12px;
+                font-size: 0.8rem;
+            }
+
+            .btn-lg {
+                padding: 10px 20px;
+                font-size: 1rem;
+            }
+
+            .stat-value {
+                font-size: 1.5rem;
+            }
+
+            .chart-container {
+                height: 200px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+   
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h4>Food Rewards Admin</h4>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="#" class="active" onclick="showPage('dashboard')"><i
+                        class="fas fa-tachometer-alt"></i>Dashboard</a></li>
+            <li><a href="#" onclick="showPage('users')"><i class="fas fa-users"></i>จัดการผู้ใช้</a></li>
+            <li><a href="#" onclick="showPage('rewards')"><i class="fas fa-gift"></i>จัดการรางวัล</a></li>
+            <li><a href="#" onclick="showPage('qrcodes')"><i class="fas fa-qrcode"></i>จัดการ QR Code</a></li>
+            <li><a href="#" onclick="showPage('transactions')"><i class="fas fa-exchange-alt"></i>ประวัติรายการ</a></li>
+            <li><a href="#" onclick="showPage('analytics')"><i class="fas fa-chart-bar"></i>วิเคราะห์ข้อมูล</a></li>
+
+        </ul>
+    </nav>
+
+    
+    <div class="main-content" id="mainContent">
+        
+        <div class="topbar">
+            <div class="topbar-left">
+                <button class="sidebar-toggle" onclick="toggleSidebar()">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h5 id="pageTitle">Dashboard</h5>
+            </div>
+            <div class="topbar-right">
+                <span id="admin-username">ผู้ดูแลระบบ</span>
+            </div>
+        </div>
+
+       
+        <div class="content">
+            
+            <div id="dashboard" class="page active">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalUsers">0</div>
+                        <div class="stat-label">ผู้ใช้ทั้งหมด</div>
+                    </div>
+                    <div class="stat-card secondary">
+                        <div class="stat-value" id="totalPoints">0</div>
+                        <div class="stat-label">แต้มที่แจกทั้งหมด</div>
+                    </div>
+                    <div class="stat-card success">
+                        <div class="stat-value" id="totalRedemptions">0</div>
+                        <div class="stat-label">การแลกรางวัล</div>
+                    </div>
+                    <div class="stat-card warning">
+                        <div class="stat-value" id="activeQRCodes">0</div>
+                        <div class="stat-label">QR Code ที่ใช้ได้</div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h6>กราฟการเพิ่มแต้มรายวัน</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="chart-container">
+                                    <canvas id="pointsChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h6>กราฟการแลกรางวัล</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="chart-container">
+                                    <canvas id="redemptionsChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h6>รายการล่าสุด</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-container">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>ผู้ใช้</th>
+                                        <th>รายการ</th>
+                                        <th>แต้ม</th>
+                                        <th class="mobile-hidden">วันที่</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="recentTransactions">
+                                    <tr>
+                                        <td colspan="4" class="loading">
+                                            <div class="spinner"></div>
+                                            กำลังโหลดข้อมูล...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+           
+            <div id="users" class="page">
+                
+                <div class="user-search-section">
+                    <h6 style="margin-bottom: 15px;"><i class="fas fa-search"></i> ค้นหาและเพิ่มแต้มให้ผู้ใช้</h6>
+
+                    <div class="search-methods">
+                        <div class="search-method active" onclick="switchSearchMethod('manual')">
+                            <i class="fas fa-edit"></i>
+                            <div><strong>ค้นหาด้วยตนเอง</strong></div>
+                            <small>เลือกจากรายการผู้ใช้</small>
+                        </div>
+                        <div class="search-method" onclick="switchSearchMethod('qr')">
+                            <i class="fas fa-qrcode"></i>
+                            <div><strong>สแกน QR Code</strong></div>
+                            <small>สแกนเพื่อค้นหาผู้ใช้</small>
+                        </div>
+                    </div>
+
+                   
+                    <div id="manualSearch" class="search-content">
+                        <div class="form-group">
+                            <label class="form-label">เลือกผู้ใช้</label>
+                            <select class="form-control" id="selectedUserId">
+                                <option value="">-- เลือกผู้ใช้ --</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary" onclick="openAddPointsModal()">
+                            <i class="fas fa-plus"></i> เพิ่มแต้ม
+                        </button>
+                    </div>
+
+                   
+                    <div id="qrSearch" class="search-content" style="display: none;">
+                        <div class="qr-scanner">
+                            <div id="qr-reader"></div>
+                            <p style="margin: 15px 0;">สแกน QR Code ของสมาชิกเพื่อค้นหาและเพิ่มแต้ม</p>
+                            <button class="btn btn-primary" onclick="startQRScanner()">
+                                <i class="fas fa-camera"></i> เริ่มสแกน
+                            </button>
+                            <button class="btn btn-secondary" onclick="stopQRScanner()" style="display: none;"
+                                id="stopScanBtn">
+                                <i class="fas fa-stop"></i> หยุดสแกน
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h6>รายการผู้ใช้ทั้งหมด</h6>
+                        <button class="btn btn-info" onclick="refreshUsers()">
+                            <i class="fas fa-sync"></i> รีเฟรช
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-container">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>ชื่อผู้ใช้</th>
+                                        <th>แต้มสะสม</th>
+                                        <th class="mobile-hidden">ระดับ</th>
+                                        <th class="mobile-hidden">วันที่สมัคร</th>
+                                        <th>จัดการ</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="usersTable">
+                                    <tr>
+                                        <td colspan="5" class="loading">
+                                            <div class="spinner"></div>
+                                            กำลังโหลดข้อมูล...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+          
+            <div id="rewards" class="page">
+                <div class="card">
+                    <div class="card-header">
+                        <h6>จัดการรางวัล</h6>
+                        <button class="btn btn-primary" onclick="openRewardModal()">
+                            <i class="fas fa-plus"></i> เพิ่มรางวัล
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-container">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>ชื่อรางวัล</th>
+                                        <th class="mobile-hidden">คำอธิบาย</th>
+                                        <th>แต้มที่ต้องใช้</th>
+                                        <th class="mobile-hidden">จำนวนคงเหลือ</th>
+                                        <th>จัดการ</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="rewardsTable">
+                                    <tr>
+                                        <td colspan="5" class="loading">
+                                            <div class="spinner"></div>
+                                            กำลังโหลดข้อมูล...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+           
+            <div id="qrcodes" class="page">
+                <div class="card">
+                    <div class="card-header">
+                        <h6>จัดการ QR Code</h6>
+                        <button class="btn btn-primary" onclick="openQRModal()">
+                            <i class="fas fa-plus"></i> สร้าง QR Code
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-container">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>โค้ด</th>
+                                        <th>แต้ม</th>
+                                        <th class="mobile-hidden">คำอธิบาย</th>
+                                        <th class="mobile-hidden">หมดอายุ</th>
+                                        <th>สถานะ</th>
+                                        <th>QR Code</th>
+                                        <th>จัดการ</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="qrCodesTable">
+                                    <tr>
+                                        <td colspan="7" class="loading">
+                                            <div class="spinner"></div>
+                                            กำลังโหลดข้อมูล...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+           
+            <div id="transactions" class="page">
+                <div class="card">
+                    <div class="card-header">
+                        <h6>ประวัติรายการทั้งหมด</h6>
+                        <button class="btn btn-success" onclick="downloadTransactionsCSV()">
+                            <i class="fas fa-download"></i> ดาวน์โหลด CSV
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-container">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>ผู้ใช้</th>
+                                        <th>รายการ</th>
+                                        <th>แต้ม</th>
+                                        <th class="mobile-hidden">วันที่</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="transactionsTable">
+                                    <tr>
+                                        <td colspan="4" class="loading">
+                                            <div class="spinner"></div>
+                                            กำลังโหลดข้อมูล...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+           
+            <div id="analytics" class="page">
+                <div class="download-section">
+                    <h6><i class="fas fa-download"></i> ดาวน์โหลดข้อมูล</h6>
+                    <div class="download-options">
+                        <button class="btn btn-success" onclick="downloadUsersCSV()">
+                            <i class="fas fa-users"></i> ข้อมูลผู้ใช้ (CSV)
+                        </button>
+                        <button class="btn btn-info" onclick="downloadRewardsCSV()">
+                            <i class="fas fa-gift"></i> ข้อมูลรางวัล (CSV)
+                        </button>
+                        <button class="btn btn-warning" onclick="downloadQRCodesCSV()">
+                            <i class="fas fa-qrcode"></i> ข้อมูล QR Code (CSV)
+                        </button>
+                        <button class="btn btn-primary" onclick="downloadRedemptionsCSV()">
+                            <i class="fas fa-trophy"></i> ข้อมูลการแลกรางวัล (CSV)
+                        </button>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col">
+                        <div class="card">
+                            <div class="card-header">
+                                <h6>กราฟผู้ใช้งานรายเดือน</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="chart-container">
+                                    <canvas id="monthlyUsersChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h6>รางวัลยอดนิยม</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="chart-container">
+                                    <canvas id="popularRewardsChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h6>การใช้งาน QR Code</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="chart-container">
+                                    <canvas id="qrUsageChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+   
+    <div id="addPointsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5>เพิ่มแต้มให้ผู้ใช้</h5>
+                <button class="modal-close" onclick="closeModal('addPointsModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="selectedUserInfo"
+                    style="display: none; background-color: var(--light); padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                    <h6>ข้อมูลผู้ใช้ที่เลือก:</h6>
+                    <div id="userInfoDisplay"></div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">เลือกผู้ใช้</label>
+                    <select class="form-control" id="modalSelectedUserId">
+                        <option value="">-- เลือกผู้ใช้ --</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">จำนวนแต้ม</label>
+                    <input type="number" class="form-control" id="pointsAmount" placeholder="ใส่จำนวนแต้ม">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">คำอธิบาย</label>
+                    <input type="text" class="form-control" id="pointsDescription" placeholder="เช่น เพิ่มแต้มโบนัส">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('addPointsModal')">ยกเลิก</button>
+                <button class="btn btn-primary" onclick="addManualPoints()">เพิ่มแต้ม</button>
+            </div>
+        </div>
+    </div>
+
+   
+    <div id="rewardModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 id="rewardModalTitle">เพิ่มรางวัล</h5>
+                <button class="modal-close" onclick="closeModal('rewardModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="rewardId">
+                <div class="form-group">
+                    <label class="form-label">ชื่อรางวัล</label>
+                    <input type="text" class="form-control" id="rewardTitle" placeholder="ใส่ชื่อรางวัล">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">คำอธิบาย</label>
+                    <textarea class="form-control" id="rewardDescription" rows="3"
+                        placeholder="ใส่คำอธิบายรางวัล"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">แต้มที่ต้องใช้</label>
+                    <input type="number" class="form-control" id="rewardPoints" placeholder="จำนวนแต้มที่ต้องใช้">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">จำนวนสต็อก (-1 = ไม่จำกัด)</label>
+                    <input type="number" class="form-control" id="rewardStock" value="-1">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('rewardModal')">ยกเลิก</button>
+                <button class="btn btn-primary" onclick="saveReward()">บันทึก</button>
+            </div>
+        </div>
+    </div>
+
+   
+    <div id="qrModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5>สร้าง QR Code</h5>
+                <button class="modal-close" onclick="closeModal('qrModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">จำนวนแต้ม</label>
+                    <input type="number" class="form-control" id="qrPoints" placeholder="จำนวนแต้มที่จะได้รับ">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">คำอธิบาย</label>
+                    <input type="text" class="form-control" id="qrDescription" placeholder="เช่น สั่งอาหาร 100 บาท">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">วันที่หมดอายุ</label>
+                    <input type="datetime-local" class="form-control" id="qrExpiry">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('qrModal')">ยกเลิก</button>
+                <button class="btn btn-primary" onclick="generateQRCode()">สร้าง QR Code</button>
+            </div>
+        </div>
+    </div>
+
+    
+    <div id="qrDisplayModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5>QR Code</h5>
+                <button class="modal-close" onclick="closeModal('qrDisplayModal')">&times;</button>
+            </div>
+            <div class="modal-body" style="text-align: center;">
+                <img id="qrCodeImage" src="" alt="QR Code" style="max-width: 100%; height: auto;">
+                <p style="margin-top: 15px; font-weight: bold;" id="qrCodeText"></p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="downloadQRCode()">ดาวน์โหลด</button>
+                <button class="btn btn-secondary" onclick="closeModal('qrDisplayModal')">ปิด</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+       const _0x520cef=_0x2dca;(function(_0x380bce,_0x3b156c){const _0x4d1991=_0x2dca,_0x427d08=_0x380bce();while(!![]){try{const _0x52892f=parseInt(_0x4d1991(0x270))/0x1+parseInt(_0x4d1991(0x1f6))/0x2+-parseInt(_0x4d1991(0x231))/0x3*(-parseInt(_0x4d1991(0x19e))/0x4)+-parseInt(_0x4d1991(0x188))/0x5*(-parseInt(_0x4d1991(0x271))/0x6)+parseInt(_0x4d1991(0x1cf))/0x7*(parseInt(_0x4d1991(0x1cc))/0x8)+-parseInt(_0x4d1991(0x1bd))/0x9+-parseInt(_0x4d1991(0x1c1))/0xa;if(_0x52892f===_0x3b156c)break;else _0x427d08['push'](_0x427d08['shift']());}catch(_0x581dc1){_0x427d08['push'](_0x427d08['shift']());}}}(_0x1cf1,0xd768e));const API_URL=_0x520cef(0x17f),LIFF_ID=_0x520cef(0x18c),botBasicId=_0x520cef(0x230);let currentEditingReward=null,dashboardData={},qrScanner=null,isScanning=![];const Toast=Swal[_0x520cef(0x1b4)]({'toast':!![],'position':_0x520cef(0x266),'showConfirmButton':![],'timer':0xbb8,'timerProgressBar':!![],'didOpen':_0xff902e=>{const _0x4aed54=_0x520cef;_0xff902e['onmouseenter']=Swal[_0x4aed54(0x240)],_0xff902e[_0x4aed54(0x20a)]=Swal[_0x4aed54(0x184)];}});document[_0x520cef(0x19a)](_0x520cef(0x26a),function(){initializeLiff(),loadDashboard(),setDefaultExpiryDate();});function initializeLiff(){const _0x3b875f=_0x520cef;typeof liff!==_0x3b875f(0x17b)?liff['init']({'liffId':LIFF_ID,'withLoginOnExternalBrowser':!![]})[_0x3b875f(0x249)](()=>{const _0x4bb2a6=_0x3b875f;liff[_0x4bb2a6(0x284)]()?(liff[_0x4bb2a6(0x206)]()[_0x4bb2a6(0x249)](_0x36b09f=>{const _0x3f42bc=_0x4bb2a6,_0xb055a3=_0x36b09f[_0x3f42bc(0x237)];document[_0x3f42bc(0x208)](_0x3f42bc(0x22e))[_0x3f42bc(0x23b)]=_0xb055a3;})[_0x4bb2a6(0x281)](_0x769052=>{const _0x1fb8fa=_0x4bb2a6;console['log'](_0x1fb8fa(0x245),_0x769052);}),liff[_0x4bb2a6(0x1be)]()['then'](_0x11d3c6=>{const _0x6ebbbf=_0x4bb2a6;!_0x11d3c6[_0x6ebbbf(0x238)]&&Swal[_0x6ebbbf(0x25d)](_0x6ebbbf(0x24f),_0x6ebbbf(0x1fc),_0x6ebbbf(0x245))[_0x6ebbbf(0x249)](()=>{const _0x14628f=_0x6ebbbf;window[_0x14628f(0x220)]=_0x14628f(0x207)+botBasicId;});})):liff[_0x4bb2a6(0x221)]()?liff['login']({'redirectUri':destinationUrl}):console[_0x4bb2a6(0x256)](_0x4bb2a6(0x202));})[_0x3b875f(0x281)](_0x3974b0=>{const _0x347379=_0x3b875f;console[_0x347379(0x245)]('LIFF\x20initialization\x20failed',_0x3974b0);}):console[_0x3b875f(0x1a9)](_0x3b875f(0x20f));}function toggleSidebar(){const _0x47f492=_0x520cef,_0xa09b85=document[_0x47f492(0x208)](_0x47f492(0x1e7)),_0x23598c=document[_0x47f492(0x208)](_0x47f492(0x18a));window[_0x47f492(0x269)]<=0x300?_0xa09b85[_0x47f492(0x1ec)]['toggle'](_0x47f492(0x211)):(_0xa09b85['classList'][_0x47f492(0x185)]('collapsed'),_0x23598c[_0x47f492(0x1ec)][_0x47f492(0x185)](_0x47f492(0x1a4)));}function showPage(_0x34791b){const _0x320b1a=_0x520cef;document[_0x320b1a(0x204)](_0x320b1a(0x1e5))[_0x320b1a(0x26b)](_0x9e8bba=>{const _0x357768=_0x320b1a;_0x9e8bba[_0x357768(0x1ec)][_0x357768(0x1a2)](_0x357768(0x264));}),document[_0x320b1a(0x204)](_0x320b1a(0x21b))[_0x320b1a(0x26b)](_0x5e57e5=>{const _0x2464d8=_0x320b1a;_0x5e57e5[_0x2464d8(0x1ec)][_0x2464d8(0x1a2)](_0x2464d8(0x264));}),document['getElementById'](_0x34791b)[_0x320b1a(0x1ec)]['add']('active'),event[_0x320b1a(0x1db)][_0x320b1a(0x1ec)][_0x320b1a(0x1c0)](_0x320b1a(0x264));const _0x4bf707={'dashboard':_0x320b1a(0x222),'users':_0x320b1a(0x1b3),'rewards':_0x320b1a(0x20d),'qrcodes':_0x320b1a(0x1ea),'transactions':_0x320b1a(0x198),'analytics':_0x320b1a(0x187)};document[_0x320b1a(0x208)](_0x320b1a(0x252))[_0x320b1a(0x19f)]=_0x4bf707[_0x34791b];_0x34791b!=='users'&&isScanning&&stopQRScanner();switch(_0x34791b){case'dashboard':loadDashboard();break;case _0x320b1a(0x232):loadUsers();break;case _0x320b1a(0x21c):loadRewards();break;case'qrcodes':loadQRCodes();break;case _0x320b1a(0x193):loadTransactions();break;case _0x320b1a(0x1c4):loadAnalytics();break;}window[_0x320b1a(0x269)]<=0x300&&document[_0x320b1a(0x208)](_0x320b1a(0x1e7))[_0x320b1a(0x1ec)][_0x320b1a(0x1a2)](_0x320b1a(0x211));}function switchSearchMethod(_0x2185aa){const _0x157fb5=_0x520cef;document[_0x157fb5(0x204)](_0x157fb5(0x210))['forEach'](_0x444423=>_0x444423[_0x157fb5(0x1ec)][_0x157fb5(0x1a2)](_0x157fb5(0x264))),document[_0x157fb5(0x204)]('.search-content')[_0x157fb5(0x26b)](_0x849cce=>_0x849cce[_0x157fb5(0x1dd)][_0x157fb5(0x1aa)]=_0x157fb5(0x196));if(_0x2185aa===_0x157fb5(0x1da)){event[_0x157fb5(0x1db)][_0x157fb5(0x215)](_0x157fb5(0x210))[_0x157fb5(0x1ec)][_0x157fb5(0x1c0)]('active'),document['getElementById'](_0x157fb5(0x1c7))['style'][_0x157fb5(0x1aa)]=_0x157fb5(0x1a6);if(isScanning)stopQRScanner();}else _0x2185aa==='qr'&&(event['target']['closest']('.search-method')[_0x157fb5(0x1ec)][_0x157fb5(0x1c0)](_0x157fb5(0x264)),document[_0x157fb5(0x208)](_0x157fb5(0x1b2))[_0x157fb5(0x1dd)][_0x157fb5(0x1aa)]=_0x157fb5(0x1a6));}function startQRScanner(){const _0x2bd88a=_0x520cef,_0x42100f=document['getElementById'](_0x2bd88a(0x260));!qrScanner&&(qrScanner=new Html5Qrcode(_0x2bd88a(0x260)));if(isScanning){stopQRScanner();return;}const _0x1224b2={'fps':0xa,'qrbox':{'width':0xfa,'height':0xfa},'aspectRatio':0x1};qrScanner['start']({'facingMode':'environment'},_0x1224b2,(_0x53db5b,_0x37bea6)=>{onQRScanSuccess(_0x53db5b);},_0x12744c=>{})[_0x2bd88a(0x249)](()=>{const _0xebadcd=_0x2bd88a;isScanning=!![],document['querySelector'](_0xebadcd(0x1cb))[_0xebadcd(0x1dd)]['display']='none',document[_0xebadcd(0x208)](_0xebadcd(0x26e))[_0xebadcd(0x1dd)][_0xebadcd(0x1aa)]=_0xebadcd(0x262);})[_0x2bd88a(0x281)](_0xd12e97=>{const _0x548c1e=_0x2bd88a;console[_0x548c1e(0x245)]('Unable\x20to\x20start\x20scanner:',_0xd12e97),alert(_0x548c1e(0x27b));});}function stopQRScanner(){const _0x5b8cfa=_0x520cef;qrScanner&&isScanning&&qrScanner[_0x5b8cfa(0x1fb)]()['then'](()=>{const _0x5bbe3f=_0x5b8cfa;isScanning=![],document[_0x5bbe3f(0x285)]('[onclick=\x22startQRScanner()\x22]')[_0x5bbe3f(0x1dd)][_0x5bbe3f(0x1aa)]=_0x5bbe3f(0x262),document[_0x5bbe3f(0x208)](_0x5bbe3f(0x26e))['style']['display']=_0x5bbe3f(0x196);})[_0x5b8cfa(0x281)](_0x215d9c=>{const _0x334de4=_0x5b8cfa;console[_0x334de4(0x245)](_0x334de4(0x216),_0x215d9c);});}function onQRScanSuccess(_0x15cf38){const _0x37c60c=_0x520cef;stopQRScanner(),document['getElementById'](_0x37c60c(0x1c5))[_0x37c60c(0x209)]=_0x15cf38,openAddPointsModal();}function loadDashboard(){const _0x3cfcd1=_0x520cef;Promise[_0x3cfcd1(0x24a)]([callAPI(_0x3cfcd1(0x1af)),callAPI(_0x3cfcd1(0x1a8)),callAPI(_0x3cfcd1(0x22f)),callAPI(_0x3cfcd1(0x1d4))])[_0x3cfcd1(0x249)](([_0x509778,_0x13525f,_0x491523,_0x3409d4])=>{const _0x3ed739=_0x3cfcd1;_0x509778[_0x3ed739(0x279)]&&(document[_0x3ed739(0x208)]('totalUsers')[_0x3ed739(0x19f)]=_0x509778[_0x3ed739(0x232)][_0x3ed739(0x1a5)]['toLocaleString'](),dashboardData[_0x3ed739(0x232)]=_0x509778[_0x3ed739(0x232)]);if(_0x13525f[_0x3ed739(0x279)]){const _0x4cc383=_0x13525f[_0x3ed739(0x193)]['filter'](_0x2c08f7=>_0x2c08f7[_0x3ed739(0x283)]>0x0)[_0x3ed739(0x1e3)]((_0x462ceb,_0x297cd3)=>_0x462ceb+_0x297cd3[_0x3ed739(0x283)],0x0);document['getElementById'](_0x3ed739(0x218))['textContent']=_0x4cc383['toLocaleString'](),dashboardData['transactions']=_0x13525f[_0x3ed739(0x193)],displayRecentTransactions(_0x13525f['transactions'][_0x3ed739(0x1b8)](0x0,0xa)),createPointsChart(_0x13525f[_0x3ed739(0x193)]);}_0x491523[_0x3ed739(0x279)]&&(document[_0x3ed739(0x208)](_0x3ed739(0x20b))[_0x3ed739(0x19f)]=_0x491523['redemptions'][_0x3ed739(0x1a5)][_0x3ed739(0x27a)](),dashboardData[_0x3ed739(0x26f)]=_0x491523[_0x3ed739(0x26f)],createRedemptionsChart(_0x491523[_0x3ed739(0x26f)]));if(_0x3409d4[_0x3ed739(0x279)]){const _0x49728c=_0x3409d4[_0x3ed739(0x1ff)][_0x3ed739(0x263)](_0x271999=>!_0x271999[_0x3ed739(0x27d)]&&new Date(_0x271999[_0x3ed739(0x1d5)])>new Date());document[_0x3ed739(0x208)](_0x3ed739(0x1bc))[_0x3ed739(0x19f)]=_0x49728c[_0x3ed739(0x1a5)][_0x3ed739(0x27a)](),dashboardData[_0x3ed739(0x1ff)]=_0x3409d4[_0x3ed739(0x1ff)];}});}function displayRecentTransactions(_0x124b81){const _0x100520=_0x520cef,_0x2d216d=document[_0x100520(0x208)](_0x100520(0x1eb));_0x2d216d[_0x100520(0x23b)]='';if(_0x124b81[_0x100520(0x1a5)]===0x0){_0x2d216d['innerHTML']=_0x100520(0x1f7);return;}_0x124b81[_0x100520(0x26b)](_0x2cdf3f=>{const _0x13d193=_0x100520,_0x192213=document['createElement']('tr'),_0x4c7a73=new Date(_0x2cdf3f[_0x13d193(0x1ed)]),_0x621034=formatDate(_0x4c7a73[_0x13d193(0x1e0)]()+0x1+'/'+_0x4c7a73[_0x13d193(0x23f)]()+'/'+_0x4c7a73[_0x13d193(0x1d0)]()),_0x3dda54=_0x621034+'\x20'+_0x4c7a73['getHours']()+':'+String(_0x4c7a73[_0x13d193(0x1ef)]())['padStart'](0x2,'0')+_0x13d193(0x178);_0x192213[_0x13d193(0x23b)]=_0x13d193(0x23a)+(_0x2cdf3f[_0x13d193(0x237)]||_0x13d193(0x1d9))+'</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td>'+_0x2cdf3f[_0x13d193(0x1dc)]+_0x13d193(0x1ab)+(_0x2cdf3f['points']>0x0?_0x13d193(0x23d):'text-danger')+'\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20'+(_0x2cdf3f[_0x13d193(0x283)]>0x0?'+':'')+_0x2cdf3f[_0x13d193(0x283)][_0x13d193(0x27a)]()+'\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20class=\x22mobile-hidden\x22>'+_0x3dda54+'</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20',_0x2d216d['appendChild'](_0x192213);});}function createPointsChart(_0x1e43e9){const _0xe993a1=_0x520cef,_0x1c94fe=document[_0xe993a1(0x208)](_0xe993a1(0x19c))[_0xe993a1(0x1c9)]('2d'),_0x3cbe5c={};_0x1e43e9[_0xe993a1(0x263)](_0x131868=>_0x131868[_0xe993a1(0x283)]>0x0)[_0xe993a1(0x26b)](_0x151f44=>{const _0x3c3f2a=_0xe993a1,_0x1cdc84=new Date(_0x151f44[_0x3c3f2a(0x1ed)])[_0x3c3f2a(0x200)]();_0x3cbe5c[_0x1cdc84]=(_0x3cbe5c[_0x1cdc84]||0x0)+_0x151f44[_0x3c3f2a(0x283)];});const _0x52b4ab=[],_0x110284=new Date();for(let _0x5087c0=0x6;_0x5087c0>=0x0;_0x5087c0--){const _0x16fb08=new Date(_0x110284);_0x16fb08[_0xe993a1(0x1f9)](_0x16fb08[_0xe993a1(0x23f)]()-_0x5087c0),_0x52b4ab[_0xe993a1(0x1ba)](_0x16fb08[_0xe993a1(0x200)]());}const _0x5caf37=_0x52b4ab[_0xe993a1(0x219)](_0x3c77c2=>_0x3cbe5c[_0x3c77c2]||0x0),_0x1c7ef5=_0x52b4ab[_0xe993a1(0x219)](_0x2883e9=>{const _0x24d710=_0xe993a1,_0x71dabf=new Date(_0x2883e9);return _0x71dabf[_0x24d710(0x23f)]()+'/'+(_0x71dabf[_0x24d710(0x1e0)]()+0x1);});new Chart(_0x1c94fe,{'type':_0xe993a1(0x181),'data':{'labels':_0x1c7ef5,'datasets':[{'label':_0xe993a1(0x1b9),'data':_0x5caf37,'borderColor':'#1ea896','backgroundColor':_0xe993a1(0x27f),'tension':0.4}]},'options':{'responsive':!![],'maintainAspectRatio':![],'scales':{'y':{'beginAtZero':!![]}}}});}function createRedemptionsChart(_0xf0fc9d){const _0x47ab6a=_0x520cef,_0x4c8597=document[_0x47ab6a(0x208)](_0x47ab6a(0x1b0))['getContext']('2d'),_0x4dd6af={};_0xf0fc9d[_0x47ab6a(0x26b)](_0x27659d=>{const _0x327f9c=_0x47ab6a,_0x3a89e0=new Date(_0x27659d[_0x327f9c(0x1c3)])[_0x327f9c(0x200)]();_0x4dd6af[_0x3a89e0]=(_0x4dd6af[_0x3a89e0]||0x0)+0x1;});const _0x30d103=[],_0x3c545a=new Date();for(let _0x35da7b=0x6;_0x35da7b>=0x0;_0x35da7b--){const _0x29868f=new Date(_0x3c545a);_0x29868f[_0x47ab6a(0x1f9)](_0x29868f[_0x47ab6a(0x23f)]()-_0x35da7b),_0x30d103['push'](_0x29868f[_0x47ab6a(0x200)]());}const _0x671aec=_0x30d103[_0x47ab6a(0x219)](_0x9aa004=>_0x4dd6af[_0x9aa004]||0x0),_0x26ce57=_0x30d103['map'](_0x1306b6=>{const _0x3f1831=_0x47ab6a,_0x30edbb=new Date(_0x1306b6);return _0x30edbb[_0x3f1831(0x23f)]()+'/'+(_0x30edbb[_0x3f1831(0x1e0)]()+0x1);});new Chart(_0x4c8597,{'type':_0x47ab6a(0x199),'data':{'labels':_0x26ce57,'datasets':[{'label':'การแลกรางวัล','data':_0x671aec,'backgroundColor':_0x47ab6a(0x186)}]},'options':{'responsive':!![],'maintainAspectRatio':![],'scales':{'y':{'beginAtZero':!![]}}}});}function loadUsers(){const _0x53ae41=_0x520cef;callAPI(_0x53ae41(0x1af))[_0x53ae41(0x249)](_0x4f556c=>{const _0x16ea93=_0x53ae41,_0x2f0dae=document[_0x16ea93(0x208)](_0x16ea93(0x1ae));_0x2f0dae['innerHTML']='';if(!_0x4f556c[_0x16ea93(0x279)]||_0x4f556c['users'][_0x16ea93(0x1a5)]===0x0){_0x2f0dae['innerHTML']=_0x16ea93(0x268);return;}const _0x2048c6=['selectedUserId',_0x16ea93(0x1e1)];_0x2048c6['forEach'](_0xde0adb=>{const _0x30693a=_0x16ea93,_0x197cf8=document[_0x30693a(0x208)](_0xde0adb);_0x197cf8[_0x30693a(0x23b)]='<option\x20value=\x22\x22>--\x20เลือกผู้ใช้\x20--</option>',_0x4f556c['users'][_0x30693a(0x26b)](_0xa8aa6e=>{const _0x1c3761=_0x30693a,_0x3092a1=document[_0x1c3761(0x1f2)](_0x1c3761(0x17d));_0x3092a1[_0x1c3761(0x209)]=_0xa8aa6e[_0x1c3761(0x278)],_0x3092a1[_0x1c3761(0x19f)]=_0xa8aa6e[_0x1c3761(0x237)]+'\x20('+_0xa8aa6e['points']+_0x1c3761(0x21d),_0x197cf8[_0x1c3761(0x195)](_0x3092a1);});}),_0x4f556c[_0x16ea93(0x232)][_0x16ea93(0x26b)](_0x1c9788=>{const _0x4560dd=_0x16ea93,_0x25b9aa=document[_0x4560dd(0x1f2)]('tr'),_0xc6f40e=new Date(_0x1c9788[_0x4560dd(0x1ca)]),_0x41aa11=formatDate(_0xc6f40e[_0x4560dd(0x1e0)]()+0x1+'/'+_0xc6f40e[_0x4560dd(0x23f)]()+'/'+_0xc6f40e[_0x4560dd(0x1d0)]());_0x25b9aa[_0x4560dd(0x23b)]=_0x4560dd(0x1f1)+_0x1c9788[_0x4560dd(0x237)]+_0x4560dd(0x1d3)+_0x1c9788[_0x4560dd(0x283)][_0x4560dd(0x27a)]()+'</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20class=\x22mobile-hidden\x22>'+_0x1c9788[_0x4560dd(0x234)]+_0x4560dd(0x217)+_0x41aa11+_0x4560dd(0x253)+_0x1c9788['userId']+'\x27,\x20\x27'+_0x1c9788['displayName']+_0x4560dd(0x27c),_0x2f0dae[_0x4560dd(0x195)](_0x25b9aa);});});}function refreshUsers(){loadUsers();}function loadRewards(){const _0x1647e0=_0x520cef;callAPI('getRewards')[_0x1647e0(0x249)](_0x52b413=>{const _0x165807=_0x1647e0,_0x2bb7cc=document[_0x165807(0x208)]('rewardsTable');_0x2bb7cc[_0x165807(0x23b)]='';if(!_0x52b413[_0x165807(0x279)]||_0x52b413[_0x165807(0x21c)]['length']===0x0){_0x2bb7cc[_0x165807(0x23b)]=_0x165807(0x268);return;}_0x52b413[_0x165807(0x21c)][_0x165807(0x26b)](_0x8c2bb8=>{const _0x7b1902=_0x165807,_0x4198ed=document[_0x7b1902(0x1f2)]('tr'),_0x222fbd=_0x8c2bb8[_0x7b1902(0x20c)]===-0x1?_0x7b1902(0x287):_0x8c2bb8[_0x7b1902(0x20c)][_0x7b1902(0x27a)]();_0x4198ed[_0x7b1902(0x23b)]=_0x7b1902(0x1f1)+_0x8c2bb8['title']+_0x7b1902(0x217)+_0x8c2bb8[_0x7b1902(0x1dc)]+_0x7b1902(0x1d3)+_0x8c2bb8['pointsRequired'][_0x7b1902(0x27a)]()+_0x7b1902(0x217)+_0x222fbd+_0x7b1902(0x265)+_0x8c2bb8['id']+'\x27)\x22>แก้ไข</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20class=\x22btn\x20btn-sm\x20btn-danger\x22\x20onclick=\x22deleteReward(\x27'+_0x8c2bb8['id']+'\x27)\x22>ลบ</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20',_0x2bb7cc[_0x7b1902(0x195)](_0x4198ed);});});}function loadQRCodes(){const _0x5061b3=_0x520cef;callAPI(_0x5061b3(0x1d4))[_0x5061b3(0x249)](_0x4af167=>{const _0x125413=_0x5061b3,_0x337c3a=document[_0x125413(0x208)](_0x125413(0x19b));_0x337c3a[_0x125413(0x23b)]='';if(!_0x4af167[_0x125413(0x279)]||_0x4af167[_0x125413(0x1ff)][_0x125413(0x1a5)]===0x0){_0x337c3a['innerHTML']='<tr><td\x20colspan=\x227\x22\x20style=\x22text-align:\x20center;\x22>ไม่มีข้อมูล</td></tr>';return;}_0x4af167[_0x125413(0x1ff)][_0x125413(0x26b)](_0x341f1e=>{const _0x35b8ef=_0x125413,_0x2337bc=document['createElement']('tr'),_0x490e39=new Date(_0x341f1e[_0x35b8ef(0x1d5)]),_0x57b121=formatDate(_0x490e39[_0x35b8ef(0x1e0)]()+0x1+'/'+_0x490e39[_0x35b8ef(0x23f)]()+'/'+_0x490e39[_0x35b8ef(0x1d0)]()),_0x5aa0d2=_0x490e39<new Date(),_0x38a23d=_0x341f1e[_0x35b8ef(0x27d)]?_0x35b8ef(0x1bb):_0x5aa0d2?_0x35b8ef(0x22c):_0x35b8ef(0x26d),_0xaa72b8=_0x341f1e[_0x35b8ef(0x27d)]?_0x35b8ef(0x25b):_0x5aa0d2?_0x35b8ef(0x183):'ใช้ได้';_0x2337bc[_0x35b8ef(0x23b)]=_0x35b8ef(0x1f1)+_0x341f1e[_0x35b8ef(0x189)]+_0x35b8ef(0x1d3)+_0x341f1e[_0x35b8ef(0x283)]['toLocaleString']()+_0x35b8ef(0x217)+_0x341f1e[_0x35b8ef(0x1dc)]+_0x35b8ef(0x217)+_0x57b121+_0x35b8ef(0x23c)+_0x38a23d+'\x22>'+_0xaa72b8+_0x35b8ef(0x190)+_0x341f1e[_0x35b8ef(0x189)]+_0x35b8ef(0x1a3)+_0x341f1e[_0x35b8ef(0x189)]+_0x35b8ef(0x17c),_0x337c3a['appendChild'](_0x2337bc);});});}function loadTransactions(){callAPI('getTransactions')['then'](_0x1f9a0a=>{const _0x4889db=_0x2dca,_0x7a9807=document['getElementById']('transactionsTable');_0x7a9807[_0x4889db(0x23b)]='';if(!_0x1f9a0a[_0x4889db(0x279)]||_0x1f9a0a[_0x4889db(0x193)][_0x4889db(0x1a5)]===0x0){_0x7a9807[_0x4889db(0x23b)]=_0x4889db(0x1f7);return;}const _0x1f6d88=_0x1f9a0a[_0x4889db(0x193)][_0x4889db(0x1f3)]((_0x480762,_0x5d218f)=>new Date(_0x5d218f[_0x4889db(0x1ed)])-new Date(_0x480762[_0x4889db(0x1ed)]));_0x1f6d88[_0x4889db(0x26b)](_0xedce39=>{const _0x5164cb=_0x4889db,_0x5f3198=document[_0x5164cb(0x1f2)]('tr'),_0x1b904b=new Date(_0xedce39[_0x5164cb(0x1ed)]),_0x370874=formatDate(_0x1b904b[_0x5164cb(0x1e0)]()+0x1+'/'+_0x1b904b[_0x5164cb(0x23f)]()+'/'+_0x1b904b['getFullYear']()),_0xa2331a=_0x370874+'\x20'+_0x1b904b[_0x5164cb(0x27e)]()+':'+String(_0x1b904b[_0x5164cb(0x1ef)]())[_0x5164cb(0x250)](0x2,'0')+_0x5164cb(0x1e4);_0x5f3198['innerHTML']=_0x5164cb(0x1f1)+(_0xedce39[_0x5164cb(0x237)]||_0x5164cb(0x1d9))+_0x5164cb(0x1d3)+_0xedce39[_0x5164cb(0x1dc)]+_0x5164cb(0x1e9)+(_0xedce39[_0x5164cb(0x283)]>0x0?_0x5164cb(0x23d):_0x5164cb(0x180))+_0x5164cb(0x25c)+(_0xedce39[_0x5164cb(0x283)]>0x0?'+':'')+_0xedce39['points'][_0x5164cb(0x27a)]()+_0x5164cb(0x255)+_0xa2331a+_0x5164cb(0x242),_0x7a9807['appendChild'](_0x5f3198);});});}function loadAnalytics(){const _0x3aac69=_0x520cef;Promise[_0x3aac69(0x24a)]([callAPI(_0x3aac69(0x1af)),callAPI(_0x3aac69(0x22f)),callAPI(_0x3aac69(0x1d4))])[_0x3aac69(0x249)](([_0x328a1a,_0x41adce,_0x4379d4])=>{const _0xafdf64=_0x3aac69;_0x328a1a[_0xafdf64(0x279)]&&createMonthlyUsersChart(_0x328a1a['users']),_0x41adce['success']&&createPopularRewardsChart(_0x41adce['redemptions']),_0x4379d4[_0xafdf64(0x279)]&&createQRUsageChart(_0x4379d4['qrCodes']);});}function createMonthlyUsersChart(_0x162fdb){const _0x4c143f=_0x520cef,_0x58aa91=document['getElementById'](_0x4c143f(0x1c8))['getContext']('2d'),_0x56ed94={};_0x162fdb[_0x4c143f(0x26b)](_0x1e7efe=>{const _0x2d1e2e=_0x4c143f,_0x3cdfca=new Date(_0x1e7efe[_0x2d1e2e(0x1ca)]),_0x4c2110=_0x3cdfca[_0x2d1e2e(0x1d0)]()+'-'+String(_0x3cdfca[_0x2d1e2e(0x1e0)]()+0x1)[_0x2d1e2e(0x250)](0x2,'0');_0x56ed94[_0x4c2110]=(_0x56ed94[_0x4c2110]||0x0)+0x1;});const _0x3a8630=[],_0x15c6e5=new Date();for(let _0x5e109b=0x5;_0x5e109b>=0x0;_0x5e109b--){const _0x2cb330=new Date(_0x15c6e5[_0x4c143f(0x1d0)](),_0x15c6e5[_0x4c143f(0x1e0)]()-_0x5e109b,0x1);_0x3a8630[_0x4c143f(0x1ba)](_0x2cb330['getFullYear']()+'-'+String(_0x2cb330['getMonth']()+0x1)[_0x4c143f(0x250)](0x2,'0'));}const _0x19852d=_0x3a8630[_0x4c143f(0x219)](_0x5ef78d=>_0x56ed94[_0x5ef78d]||0x0),_0x2c16c5=_0x3a8630['map'](_0x247112=>{const _0x4fcc60=_0x4c143f,[_0x633de3,_0x47e79c]=_0x247112[_0x4fcc60(0x22a)]('-'),_0x17da51=[_0x4fcc60(0x18b),_0x4fcc60(0x248),_0x4fcc60(0x1d2),_0x4fcc60(0x258),_0x4fcc60(0x257),_0x4fcc60(0x1b7),_0x4fcc60(0x1a0),_0x4fcc60(0x261),_0x4fcc60(0x228),_0x4fcc60(0x1fa),_0x4fcc60(0x213),'ธ.ค.'];return _0x17da51[parseInt(_0x47e79c)-0x1]+'\x20'+_0x633de3;});new Chart(_0x58aa91,{'type':_0x4c143f(0x181),'data':{'labels':_0x2c16c5,'datasets':[{'label':_0x4c143f(0x236),'data':_0x19852d,'borderColor':_0x4c143f(0x17a),'backgroundColor':'rgba(30,\x20168,\x20150,\x200.1)','tension':0.4}]},'options':{'responsive':!![],'maintainAspectRatio':![],'scales':{'y':{'beginAtZero':!![]}}}});}function _0x2dca(_0x374105,_0x2cee78){const _0x1cf130=_0x1cf1();return _0x2dca=function(_0x2dca80,_0x3847c6){_0x2dca80=_0x2dca80-0x178;let _0x552afe=_0x1cf130[_0x2dca80];return _0x552afe;},_0x2dca(_0x374105,_0x2cee78);}function createPopularRewardsChart(_0x49363d){const _0x452f5f=_0x520cef,_0x35d7c7=document[_0x452f5f(0x208)]('popularRewardsChart')[_0x452f5f(0x1c9)]('2d'),_0x40d3d9={};_0x49363d[_0x452f5f(0x26b)](_0x292754=>{const _0x329623=_0x292754['rewardTitle']||'ไม่ทราบ';_0x40d3d9[_0x329623]=(_0x40d3d9[_0x329623]||0x0)+0x1;});const _0x22fd48=Object['entries'](_0x40d3d9)[_0x452f5f(0x1f3)](([,_0x72a353],[,_0x492194])=>_0x492194-_0x72a353)[_0x452f5f(0x1b8)](0x0,0x5),_0x51f2b8=_0x22fd48[_0x452f5f(0x219)](([_0x11b1d3])=>_0x11b1d3),_0x1ee3e8=_0x22fd48[_0x452f5f(0x219)](([,_0x30164f])=>_0x30164f);new Chart(_0x35d7c7,{'type':_0x452f5f(0x182),'data':{'labels':_0x51f2b8,'datasets':[{'data':_0x1ee3e8,'backgroundColor':[_0x452f5f(0x17a),_0x452f5f(0x186),_0x452f5f(0x1f5),_0x452f5f(0x224),'#17a2b8']}]},'options':{'responsive':!![],'maintainAspectRatio':![]}});}function createQRUsageChart(_0x5d4144){const _0x103f07=_0x520cef,_0x48db40=document['getElementById'](_0x103f07(0x1c6))[_0x103f07(0x1c9)]('2d'),_0x5dbb8e=_0x5d4144[_0x103f07(0x263)](_0x5d3603=>_0x5d3603[_0x103f07(0x27d)])[_0x103f07(0x1a5)],_0x4da3e1=_0x5d4144[_0x103f07(0x263)](_0x54fa16=>!_0x54fa16[_0x103f07(0x27d)]&&new Date(_0x54fa16[_0x103f07(0x1d5)])<new Date())[_0x103f07(0x1a5)],_0x2031f2=_0x5d4144['filter'](_0x4d3bd7=>!_0x4d3bd7['isUsed']&&new Date(_0x4d3bd7[_0x103f07(0x1d5)])>=new Date())['length'];new Chart(_0x48db40,{'type':_0x103f07(0x212),'data':{'labels':[_0x103f07(0x25b),'หมดอายุ',_0x103f07(0x1fd)],'datasets':[{'data':[_0x5dbb8e,_0x4da3e1,_0x2031f2],'backgroundColor':[_0x103f07(0x1df),_0x103f07(0x224),'#28a745']}]},'options':{'responsive':!![],'maintainAspectRatio':![]}});}function downloadCSV(_0x5641cd,_0x3a77d5){const _0x58c79f=_0x520cef,_0x353aa3=arrayToCSV(_0x5641cd),_0x567818=new Blob(['\ufeff'+_0x353aa3],{'type':_0x58c79f(0x1ac)}),_0x1cc28f=document[_0x58c79f(0x1f2)]('a'),_0x2cf45a=URL[_0x58c79f(0x21f)](_0x567818);_0x1cc28f[_0x58c79f(0x22d)]('href',_0x2cf45a),_0x1cc28f['setAttribute']('download',_0x3a77d5),_0x1cc28f[_0x58c79f(0x1dd)]['visibility']='hidden',document[_0x58c79f(0x18d)][_0x58c79f(0x195)](_0x1cc28f),_0x1cc28f[_0x58c79f(0x197)](),document[_0x58c79f(0x18d)][_0x58c79f(0x1e8)](_0x1cc28f);}function arrayToCSV(_0x10f15a){const _0x367e15=_0x520cef;if(!_0x10f15a||_0x10f15a[_0x367e15(0x1a5)]===0x0)return'';const _0x16b9bb=Object[_0x367e15(0x1e6)](_0x10f15a[0x0]),_0x545cf6=[];_0x545cf6[_0x367e15(0x1ba)](_0x16b9bb[_0x367e15(0x1c2)](','));for(const _0x3341ad of _0x10f15a){const _0xdcb419=_0x16b9bb['map'](_0x250829=>{const _0x445e80=_0x367e15,_0x817132=_0x3341ad[_0x250829];return typeof _0x817132===_0x445e80(0x25e)&&(_0x817132[_0x445e80(0x229)](',')||_0x817132[_0x445e80(0x229)]('\x22'))?'\x22'+_0x817132[_0x445e80(0x1fe)](/"/g,'\x22\x22')+'\x22':_0x817132;});_0x545cf6[_0x367e15(0x1ba)](_0xdcb419[_0x367e15(0x1c2)](','));}return _0x545cf6[_0x367e15(0x1c2)]('\x0a');}function downloadUsersCSV(){const _0xf9d0a6=_0x520cef;callAPI(_0xf9d0a6(0x1af))[_0xf9d0a6(0x249)](_0xdc9f59=>{const _0x36f0b7=_0xf9d0a6;if(_0xdc9f59['success']){const _0x30b745=_0xdc9f59['users'][_0x36f0b7(0x219)](_0xbd698a=>({'User\x20ID':_0xbd698a[_0x36f0b7(0x278)],'Display\x20Name':_0xbd698a[_0x36f0b7(0x237)],'Points':_0xbd698a['points'],'Level':_0xbd698a[_0x36f0b7(0x234)],'Created\x20At':new Date(_0xbd698a[_0x36f0b7(0x1ca)])['toLocaleString'](_0x36f0b7(0x243))}));downloadCSV(_0x30b745,'users_'+new Date()[_0x36f0b7(0x267)]()[_0x36f0b7(0x22a)]('T')[0x0]+_0x36f0b7(0x1f8));}});}function downloadRewardsCSV(){const _0x2c8a20=_0x520cef;callAPI(_0x2c8a20(0x17e))['then'](_0x572f6d=>{const _0x2e17a7=_0x2c8a20;if(_0x572f6d[_0x2e17a7(0x279)]){const _0x5c654b=_0x572f6d[_0x2e17a7(0x21c)][_0x2e17a7(0x219)](_0x44414c=>({'ID':_0x44414c['id'],'Title':_0x44414c[_0x2e17a7(0x1b5)],'Description':_0x44414c[_0x2e17a7(0x1dc)],'Points\x20Required':_0x44414c['pointsRequired'],'Stock':_0x44414c['stock']}));downloadCSV(_0x5c654b,_0x2e17a7(0x1e2)+new Date()[_0x2e17a7(0x267)]()[_0x2e17a7(0x22a)]('T')[0x0]+_0x2e17a7(0x1f8));}});}function downloadQRCodesCSV(){const _0xd2ab92=_0x520cef;callAPI(_0xd2ab92(0x1d4))[_0xd2ab92(0x249)](_0x455bec=>{const _0x3fe0e2=_0xd2ab92;if(_0x455bec[_0x3fe0e2(0x279)]){const _0x5f47b4=_0x455bec[_0x3fe0e2(0x1ff)][_0x3fe0e2(0x219)](_0x2dfe71=>({'Code':_0x2dfe71[_0x3fe0e2(0x189)],'Points':_0x2dfe71[_0x3fe0e2(0x283)],'Description':_0x2dfe71[_0x3fe0e2(0x1dc)],'Expiry\x20Date':new Date(_0x2dfe71[_0x3fe0e2(0x1d5)])[_0x3fe0e2(0x27a)](_0x3fe0e2(0x243)),'Is\x20Used':_0x2dfe71['isUsed']?_0x3fe0e2(0x25b):_0x3fe0e2(0x251),'Created\x20At':new Date(_0x2dfe71[_0x3fe0e2(0x1ca)])['toLocaleString']('th-TH')}));downloadCSV(_0x5f47b4,_0x3fe0e2(0x21a)+new Date()[_0x3fe0e2(0x267)]()[_0x3fe0e2(0x22a)]('T')[0x0]+_0x3fe0e2(0x1f8));}});}function downloadRedemptionsCSV(){const _0x3aad3d=_0x520cef;callAPI(_0x3aad3d(0x22f))['then'](_0x513009=>{const _0x40e771=_0x3aad3d;if(_0x513009['success']){const _0x2149c4=_0x513009[_0x40e771(0x26f)][_0x40e771(0x219)](_0x38761e=>({'ID':_0x38761e['id'],'User':_0x38761e[_0x40e771(0x237)],'Reward':_0x38761e['rewardTitle'],'Redemption\x20Code':_0x38761e['redemptionCode'],'Status':_0x38761e[_0x40e771(0x25a)],'Redeemed\x20At':new Date(_0x38761e['redeemedAt'])['toLocaleString'](_0x40e771(0x243))}));downloadCSV(_0x2149c4,_0x40e771(0x214)+new Date()['toISOString']()[_0x40e771(0x22a)]('T')[0x0]+'.csv');}});}function downloadTransactionsCSV(){const _0x2fcfb5=_0x520cef;callAPI(_0x2fcfb5(0x1a8))[_0x2fcfb5(0x249)](_0x5f039a=>{const _0x1e6b29=_0x2fcfb5;if(_0x5f039a[_0x1e6b29(0x279)]){const _0x907de9=_0x5f039a[_0x1e6b29(0x193)][_0x1e6b29(0x219)](_0x23b823=>({'ID':_0x23b823['id'],'User':_0x23b823[_0x1e6b29(0x237)],'Points':_0x23b823[_0x1e6b29(0x283)],'Description':_0x23b823['description'],'Timestamp':new Date(_0x23b823['timestamp'])[_0x1e6b29(0x27a)](_0x1e6b29(0x243))}));downloadCSV(_0x907de9,_0x1e6b29(0x273)+new Date()['toISOString']()[_0x1e6b29(0x22a)]('T')[0x0]+_0x1e6b29(0x1f8));}});}function openModal(_0x38316e){const _0x460474=_0x520cef;document[_0x460474(0x208)](_0x38316e)[_0x460474(0x1ec)][_0x460474(0x1c0)](_0x460474(0x264));}function closeModal(_0x347ecc){const _0x13a6c9=_0x520cef;document[_0x13a6c9(0x208)](_0x347ecc)['classList']['remove'](_0x13a6c9(0x264));}function openAddPointsModal(){const _0x302eb5=_0x520cef,_0x1604b4=document[_0x302eb5(0x208)](_0x302eb5(0x1c5))[_0x302eb5(0x209)];_0x1604b4&&(document['getElementById'](_0x302eb5(0x1e1))[_0x302eb5(0x209)]=_0x1604b4,updateSelectedUserInfo(_0x1604b4)),openModal('addPointsModal');}function editUserPoints(_0x390544,_0x3d6ba1){const _0xf5352e=_0x520cef;document[_0xf5352e(0x208)](_0xf5352e(0x1e1))[_0xf5352e(0x209)]=_0x390544,updateSelectedUserInfo(_0x390544),openModal('addPointsModal');}function _0x1cf1(){const _0x25afbe=['text-success','src','getDate','stopTimer','&size=300x300','</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20','th-TH','แก้ไขรางวัล','error','find','resize','ก.พ.','then','all','qrCodeImage','เพิ่มรางวัล','toLocaleDateString','โค้ด:\x20','เดี๋ยวก่อน!','padStart','ยังไม่ได้ใช้','pageTitle','</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20class=\x22btn\x20btn-sm\x20btn-primary\x22\x20onclick=\x22editUserPoints(\x27','generateQRCode','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20class=\x22mobile-hidden\x22>','warn','พ.ค.','เม.ย.','qrCodeText','status','ใช้แล้ว','\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20','fire','string','rewardModal','qr-reader','ส.ค.','inline-block','filter','active','</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20class=\x22btn\x20btn-sm\x20btn-primary\x22\x20onclick=\x22editReward(\x27','top-end','toISOString','<tr><td\x20colspan=\x225\x22\x20style=\x22text-align:\x20center;\x22>ไม่มีข้อมูล</td></tr>','innerWidth','DOMContentLoaded','forEach','rewardDescription','badge-success','stopScanBtn','redemptions','1352778tDnpLi','636UZNetu','getTime','transactions_','deleteReward','addPointsModal','https://api.qrserver.com/v1/create-qr-code/?data=','rewardPoints','userId','success','toLocaleString','ไม่สามารถเปิดกล้องได้\x20กรุณาตรวจสอบการอนุญาตใช้กล้อง','\x27)\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20เพิ่มแต้ม\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20','isUsed','getHours','rgba(30,\x20168,\x20150,\x200.1)','action','catch','json','points','isLoggedIn','querySelector','คุณแน่ใจหรือไม่ที่จะลบรางวัลนี้?','ไม่จำกัด','rewardId','\x20\x20น.','pointsAmount','#1ea896','undefined','\x27)\x22>ลบ</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20','option','getRewards','https://script.google.com/macros/s/AKfycbwCdQ29DcGQVsNd-3xZxRTe56EiM14vESChjw9ffUPwi3sktCLZdayZuNhCIyub8LiSkQ/exec','text-danger','line','doughnut','หมดอายุ','resumeTimer','toggle','#ff715b','วิเคราะห์ข้อมูล','9300RiIOwi','code','mainContent','ม.ค.','2007550102-dV9OjJNN','body','numeric','setHours','</span></td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20class=\x22btn\x20btn-sm\x20btn-secondary\x22\x20onclick=\x22showQRCode(\x27','pointsRequired','change','transactions','append','appendChild','none','click','ประวัติรายการ','bar','addEventListener','qrCodesTable','pointsChart','deleteQRCode','4TAQGZO','textContent','ก.ค.','กำลังโหลด..','remove','\x27)\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<i\x20class=\x22fas\x20fa-qrcode\x22></i>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20class=\x22btn\x20btn-sm\x20btn-danger\x22\x20onclick=\x22deleteQRCode(\x27','expanded','length','block','selectedUserInfo','getTransactions','log','display','</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20class=\x22','text/csv;charset=utf-8;','showLoading','usersTable','getUsers','redemptionsChart','qrPoints','qrSearch','จัดการผู้ใช้','mixin','title','Error\x20formatting\x20date:','มิ.ย.','slice','แต้มที่แจก','push','badge-danger','activeQRCodes','13740516CNaTok','getFriendship','โปรดรอสักครู่','add','33589350GWqJQm','join','redeemedAt','analytics','selectedUserId','qrUsageChart','manualSearch','monthlyUsersChart','getContext','createdAt','[onclick=\x22startQRScanner()\x22]','56yLLBwB','message','.png','1375318yTjhlB','getFullYear','เกิดข้อผิดพลาด:\x20','มี.ค.','</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td>','getQRCodes','expiryDate','rewardModalTitle','updateReward','pointsDescription','ไม่ทราบชื่อ','manual','target','description','style','qrDescription','#dc3545','getMonth','modalSelectedUserId','rewards_','reduce','\x20น.','.page','keys','sidebar','removeChild','</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20class=\x22','จัดการ\x20QR\x20Code','recentTransactions','classList','timestamp','qrDisplayModal','getMinutes','qrExpiry','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td>','createElement','sort','userInfoDisplay','#28a745','3136724rlejJf','<tr><td\x20colspan=\x224\x22\x20style=\x22text-align:\x20center;\x22>ไม่มีข้อมูล</td></tr>','.csv','setDate','ต.ค.','stop','คุณยังไม่ได้เป็นเพื่อนกับเรา','ใช้ได้','replace','qrCodes','toDateString','Network\x20error','LIFF\x20is\x20not\x20in\x20LINE\x20client.','qr-code-','querySelectorAll','rewardStock','getProfile','https://line.me/R/ti/p/','getElementById','value','onmouseleave','totalRedemptions','stock','จัดการรางวัล','short','LIFF\x20SDK\x20not\x20found','.search-method','show','pie','พ.ย.','redemptions_','closest','Error\x20stopping\x20scanner:','</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20class=\x22mobile-hidden\x22>','totalPoints','map','qrcodes_','.sidebar-menu\x20a','rewards','\x20แต้ม)','options','createObjectURL','location','isInClient','Dashboard','qrModal','#ffc107','สร้าง\x20QR\x20Code\x20สำเร็จ\x0aโค้ด:\x20','API\x20Error:','download','ก.ย.','includes','split','</strong>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20','badge-warning','setAttribute','admin-username','getRedemptions','@028ffvlr','3823077MPpIig','users','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<strong>','level','rewardTitle','ผู้ใช้ใหม่','displayName','friendFlag','กรุณากรอกข้อมูลให้ครบถ้วน','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td>','innerHTML','</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td><span\x20class=\x22badge\x20'];_0x1cf1=function(){return _0x25afbe;};return _0x1cf1();}function updateSelectedUserInfo(_0x16b45f){const _0x266330=_0x520cef;if(!_0x16b45f){document[_0x266330(0x208)](_0x266330(0x1a7))[_0x266330(0x1dd)][_0x266330(0x1aa)]=_0x266330(0x196);return;}const _0x205b13=document[_0x266330(0x208)](_0x266330(0x1e1)),_0x27f76e=_0x205b13[_0x266330(0x21e)][_0x205b13['selectedIndex']];_0x27f76e&&_0x27f76e[_0x266330(0x209)]&&(document[_0x266330(0x208)](_0x266330(0x1a7))['style'][_0x266330(0x1aa)]='block',document['getElementById'](_0x266330(0x1f4))['innerHTML']=_0x266330(0x233)+_0x27f76e[_0x266330(0x19f)]+_0x266330(0x22b));}function addManualPoints(){const _0x493b6a=_0x520cef,_0x4d5ead=document[_0x493b6a(0x208)]('modalSelectedUserId')[_0x493b6a(0x209)],_0x88b58f=document['getElementById'](_0x493b6a(0x179))['value'],_0x307a50=document[_0x493b6a(0x208)](_0x493b6a(0x1d8))[_0x493b6a(0x209)];if(!_0x4d5ead||!_0x88b58f){Toast[_0x493b6a(0x25d)]({'icon':'warning','title':_0x493b6a(0x239)});return;}closeModal(_0x493b6a(0x275)),Swal[_0x493b6a(0x25d)]({'title':_0x493b6a(0x1a1),'text':_0x493b6a(0x1bf),'allowOutsideClick':![],'didOpen':()=>{const _0x454a79=_0x493b6a;Swal[_0x454a79(0x1ad)]();}}),callAPI('addManualPoints',{'userId':_0x4d5ead,'points':_0x88b58f,'description':_0x307a50})['then'](_0x2ca3f2=>{const _0x56395c=_0x493b6a;_0x2ca3f2['success']?(Toast[_0x56395c(0x25d)]({'icon':'success','title':_0x2ca3f2['message']}),closeModal(_0x56395c(0x275)),loadUsers(),loadDashboard(),document[_0x56395c(0x208)](_0x56395c(0x1e1))['value']='',document[_0x56395c(0x208)](_0x56395c(0x179))[_0x56395c(0x209)]='',document[_0x56395c(0x208)](_0x56395c(0x1d8))[_0x56395c(0x209)]='',document[_0x56395c(0x208)](_0x56395c(0x1a7))[_0x56395c(0x1dd)][_0x56395c(0x1aa)]=_0x56395c(0x196)):Toast[_0x56395c(0x25d)]({'icon':_0x56395c(0x245),'title':_0x56395c(0x1d1)+_0x2ca3f2[_0x56395c(0x1cd)]});});}function openRewardModal(){const _0x3f7c7e=_0x520cef;currentEditingReward=null,document[_0x3f7c7e(0x208)](_0x3f7c7e(0x1d6))[_0x3f7c7e(0x19f)]=_0x3f7c7e(0x24c),document[_0x3f7c7e(0x208)](_0x3f7c7e(0x288))['value']='',document[_0x3f7c7e(0x208)](_0x3f7c7e(0x235))['value']='',document[_0x3f7c7e(0x208)](_0x3f7c7e(0x26c))[_0x3f7c7e(0x209)]='',document[_0x3f7c7e(0x208)](_0x3f7c7e(0x277))[_0x3f7c7e(0x209)]='',document[_0x3f7c7e(0x208)](_0x3f7c7e(0x205))['value']='-1',openModal(_0x3f7c7e(0x25f));}function editReward(_0x43e3eb){const _0x425709=_0x520cef;callAPI(_0x425709(0x17e))[_0x425709(0x249)](_0x2d7848=>{const _0x46ae77=_0x425709;if(_0x2d7848[_0x46ae77(0x279)]){const _0x368755=_0x2d7848['rewards'][_0x46ae77(0x246)](_0x65e91b=>_0x65e91b['id']===_0x43e3eb);_0x368755&&(currentEditingReward=_0x368755,document['getElementById'](_0x46ae77(0x1d6))[_0x46ae77(0x19f)]=_0x46ae77(0x244),document[_0x46ae77(0x208)]('rewardId')[_0x46ae77(0x209)]=_0x368755['id'],document[_0x46ae77(0x208)](_0x46ae77(0x235))[_0x46ae77(0x209)]=_0x368755[_0x46ae77(0x1b5)],document['getElementById'](_0x46ae77(0x26c))[_0x46ae77(0x209)]=_0x368755[_0x46ae77(0x1dc)],document[_0x46ae77(0x208)]('rewardPoints')[_0x46ae77(0x209)]=_0x368755[_0x46ae77(0x191)],document['getElementById'](_0x46ae77(0x205))['value']=_0x368755[_0x46ae77(0x20c)],openModal(_0x46ae77(0x25f)));}});}function saveReward(){const _0x1d07bf=_0x520cef,_0x1d7fdc=document[_0x1d07bf(0x208)](_0x1d07bf(0x288))[_0x1d07bf(0x209)],_0x21a143=document['getElementById'](_0x1d07bf(0x235))['value'],_0x411405=document[_0x1d07bf(0x208)](_0x1d07bf(0x26c))[_0x1d07bf(0x209)],_0x3ea85b=document[_0x1d07bf(0x208)]('rewardPoints')[_0x1d07bf(0x209)],_0xf58633=document[_0x1d07bf(0x208)]('rewardStock')[_0x1d07bf(0x209)];if(!_0x21a143||!_0x411405||!_0x3ea85b){Toast['fire']({'icon':'warning','title':'กรุณากรอกข้อมูลให้ครบถ้วน'});return;}closeModal(_0x1d07bf(0x25f)),Swal['fire']({'title':'กำลังโหลด..','text':'โปรดรอสักครู่','allowOutsideClick':![],'didOpen':()=>{Swal['showLoading']();}});const _0x478b66=_0x1d7fdc?_0x1d07bf(0x1d7):'addReward',_0x4daeea={'title':_0x21a143,'description':_0x411405,'pointsRequired':_0x3ea85b,'stock':_0xf58633};_0x1d7fdc&&(_0x4daeea['id']=_0x1d7fdc),callAPI(_0x478b66,_0x4daeea)[_0x1d07bf(0x249)](_0x50c4af=>{const _0x885d15=_0x1d07bf;_0x50c4af['success']?(Toast['fire']({'icon':_0x885d15(0x279),'title':_0x50c4af[_0x885d15(0x1cd)]}),closeModal(_0x885d15(0x25f)),loadRewards()):Toast[_0x885d15(0x25d)]({'icon':_0x885d15(0x245),'title':_0x885d15(0x1d1)+_0x50c4af[_0x885d15(0x1cd)]});});}function deleteReward(_0x49827a){const _0x46b2e6=_0x520cef;confirm(_0x46b2e6(0x286))&&(Swal[_0x46b2e6(0x25d)]({'title':_0x46b2e6(0x1a1),'text':_0x46b2e6(0x1bf),'allowOutsideClick':![],'didOpen':()=>{Swal['showLoading']();}}),callAPI(_0x46b2e6(0x274),{'id':_0x49827a})[_0x46b2e6(0x249)](_0x4758df=>{const _0x4dff99=_0x46b2e6;_0x4758df[_0x4dff99(0x279)]?(Toast[_0x4dff99(0x25d)]({'icon':_0x4dff99(0x279),'title':_0x4758df[_0x4dff99(0x1cd)]}),loadRewards()):Toast[_0x4dff99(0x25d)]({'icon':_0x4dff99(0x245),'title':_0x4dff99(0x1d1)+_0x4758df['message']});}));}function openQRModal(){const _0x44d02b=_0x520cef;openModal(_0x44d02b(0x223));}function generateQRCode(){const _0x3c6dc8=_0x520cef,_0x3679a1=document[_0x3c6dc8(0x208)](_0x3c6dc8(0x1b1))[_0x3c6dc8(0x209)],_0x37396c=document[_0x3c6dc8(0x208)](_0x3c6dc8(0x1de))[_0x3c6dc8(0x209)],_0xc4adf3=document['getElementById'](_0x3c6dc8(0x1f0))[_0x3c6dc8(0x209)];if(!_0x3679a1||!_0x37396c||!_0xc4adf3){Toast[_0x3c6dc8(0x25d)]({'icon':'warning','title':_0x3c6dc8(0x239)});return;}closeModal(_0x3c6dc8(0x223)),Swal[_0x3c6dc8(0x25d)]({'title':_0x3c6dc8(0x1a1),'text':'โปรดรอสักครู่','allowOutsideClick':![],'didOpen':()=>{Swal['showLoading']();}}),callAPI(_0x3c6dc8(0x254),{'points':_0x3679a1,'description':_0x37396c,'expiryDate':_0xc4adf3})[_0x3c6dc8(0x249)](_0x144687=>{const _0x1a2876=_0x3c6dc8;_0x144687[_0x1a2876(0x279)]?(Toast[_0x1a2876(0x25d)]({'icon':_0x1a2876(0x279),'title':_0x1a2876(0x225)+_0x144687[_0x1a2876(0x189)]}),closeModal('qrModal'),loadQRCodes(),showQRCode(_0x144687[_0x1a2876(0x189)]),document[_0x1a2876(0x208)](_0x1a2876(0x1b1))[_0x1a2876(0x209)]='',document[_0x1a2876(0x208)]('qrDescription')[_0x1a2876(0x209)]='',document[_0x1a2876(0x208)]('qrExpiry')[_0x1a2876(0x209)]=''):Toast[_0x1a2876(0x25d)]({'icon':'error','title':_0x1a2876(0x1d1)+_0x144687['message']});});}function showQRCode(_0x2bc44e){const _0x4a4c95=_0x520cef,_0x79956f=_0x4a4c95(0x276)+encodeURIComponent(_0x2bc44e)+_0x4a4c95(0x241);document[_0x4a4c95(0x208)](_0x4a4c95(0x24b))[_0x4a4c95(0x23e)]=_0x79956f,document[_0x4a4c95(0x208)](_0x4a4c95(0x259))[_0x4a4c95(0x19f)]=_0x4a4c95(0x24e)+_0x2bc44e,openModal(_0x4a4c95(0x1ee));}function downloadQRCode(){const _0x89f7d4=_0x520cef,_0x33a47b=document[_0x89f7d4(0x208)](_0x89f7d4(0x24b)),_0x1b905a=document[_0x89f7d4(0x1f2)]('a');_0x1b905a[_0x89f7d4(0x227)]=_0x89f7d4(0x203)+document[_0x89f7d4(0x208)]('qrCodeText')[_0x89f7d4(0x19f)][_0x89f7d4(0x1fe)]('โค้ด:\x20','')+_0x89f7d4(0x1ce),_0x1b905a['href']=_0x33a47b[_0x89f7d4(0x23e)],_0x1b905a[_0x89f7d4(0x197)]();}function deleteQRCode(_0xe70d97){const _0x112f1d=_0x520cef;confirm('คุณแน่ใจหรือไม่ที่จะลบ\x20QR\x20Code\x20นี้?')&&(Swal[_0x112f1d(0x25d)]({'title':_0x112f1d(0x1a1),'text':_0x112f1d(0x1bf),'allowOutsideClick':![],'didOpen':()=>{const _0x18e3cc=_0x112f1d;Swal[_0x18e3cc(0x1ad)]();}}),callAPI(_0x112f1d(0x19d),{'code':_0xe70d97})[_0x112f1d(0x249)](_0x572f1d=>{const _0x1b7def=_0x112f1d;_0x572f1d['success']?(Toast[_0x1b7def(0x25d)]({'icon':'success','title':_0x572f1d[_0x1b7def(0x1cd)]}),loadQRCodes()):Toast['fire']({'icon':_0x1b7def(0x245),'title':'เกิดข้อผิดพลาด:\x20'+_0x572f1d[_0x1b7def(0x1cd)]});}));}function setDefaultExpiryDate(){const _0x470c0d=_0x520cef,_0x45c779=new Date();_0x45c779[_0x470c0d(0x1f9)](_0x45c779[_0x470c0d(0x23f)]()+0x1),_0x45c779[_0x470c0d(0x18f)](0x17,0x3b,0x0,0x0),document[_0x470c0d(0x208)](_0x470c0d(0x1f0))[_0x470c0d(0x209)]=_0x45c779[_0x470c0d(0x267)]()[_0x470c0d(0x1b8)](0x0,0x10);}function callAPI(_0x22de31,_0x4a4935={}){const _0x15c04c=_0x520cef,_0x1266c0=new URLSearchParams();return _0x1266c0[_0x15c04c(0x194)](_0x15c04c(0x280),_0x22de31),Object[_0x15c04c(0x1e6)](_0x4a4935)[_0x15c04c(0x26b)](_0x115300=>{_0x1266c0['append'](_0x115300,_0x4a4935[_0x115300]);}),fetch(API_URL,{'method':'POST','headers':{'Content-Type':'application/x-www-form-urlencoded'},'body':_0x1266c0})['then'](_0x3f8f35=>_0x3f8f35[_0x15c04c(0x282)]())[_0x15c04c(0x281)](_0x18c68a=>{const _0x1b3987=_0x15c04c;return console[_0x1b3987(0x245)](_0x1b3987(0x226),_0x18c68a),{'success':![],'message':_0x1b3987(0x201)};});}window[_0x520cef(0x19a)](_0x520cef(0x247),function(){const _0x9c9260=_0x520cef;window[_0x9c9260(0x269)]>0x300&&document[_0x9c9260(0x208)](_0x9c9260(0x1e7))[_0x9c9260(0x1ec)]['remove'](_0x9c9260(0x211));}),document[_0x520cef(0x19a)](_0x520cef(0x26a),function(){const _0x294340=_0x520cef,_0x17a7b2=document[_0x294340(0x208)](_0x294340(0x1e1));_0x17a7b2&&_0x17a7b2[_0x294340(0x19a)](_0x294340(0x192),function(){updateSelectedUserInfo(this['value']);});});function formatDate(_0x5eaf33){const _0x21ab09=_0x520cef;if(!_0x5eaf33)return'-';try{const _0x1394b8=new Date(_0x5eaf33);if(isNaN(_0x1394b8[_0x21ab09(0x272)]()))return _0x5eaf33;return _0x1394b8[_0x21ab09(0x24d)](_0x21ab09(0x243),{'year':'numeric','month':_0x21ab09(0x20e),'day':_0x21ab09(0x18e)});}catch(_0x507591){return console['error'](_0x21ab09(0x1b6),_0x5eaf33,_0x507591),_0x5eaf33;}}
+    </script>
+</body>
+
+</html>
