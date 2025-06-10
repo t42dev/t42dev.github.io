@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Rewards - สะสมแต้มอาหาร</title>
+    <meta name="description" content="Food Rewards" />
+    <meta name="author" content="T42" />
+    <meta property="og:title" content="Food Rewards-iton5-thailand" />
+    <meta property="og:description" content="Food Rewards" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://lh3.googleusercontent.com/d/1iC3WIZLbnrjAlcMXqFk1bQ-jiVQhTuci" />
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://bit.ly/fontiton5" type="text/css" charset="utf-8" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --dark-gray: #4c5454;
+            --coral: #ff715b;
+            --white: #ffffff;
+            --teal: #0e9483;
+            --brown: #523f38;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'line_seed_sans_th';
+        }
+
+        body {
+            background-color: #f8f9fa;
+            color: var(--dark-gray);
+            min-height: 100vh;
+            position: relative;
+        }
+
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 0;
+            background-color: var(--white);
+            min-height: 100vh;
+            position: relative;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            background-color: var(--teal);
+            color: var(--white);
+            padding: 20px;
+            text-align: center;
+            position: relative;
+            border-bottom-left-radius: 20px;
+            border-bottom-right-radius: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .profile-section {
+            padding: 20px;
+            background-color: var(--white);
+            border-radius: 15px;
+            margin: -40px 20px 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 10;
+        }
+
+        .profile-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+
+
+
+        .profile-details h2 {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
+
+        .profile-details p {
+            font-size: 0.9rem;
+            color: #777;
+        }
+
+        .points-display {
+            background: linear-gradient(135deg, var(--coral), #ff9d7d);
+            border-radius: 12px;
+            padding: 15px;
+            color: var(--white);
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(255, 113, 91, 0.3);
+        }
+
+        .points-display h3 {
+            font-size: 2.5rem;
+            margin-bottom: 5px;
+            font-weight: 700;
+        }
+
+        .points-display p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .level-progress {
+            margin-top: 15px;
+        }
+
+        .level-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 0.8rem;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background-color: rgba(255, 255, 255, 0.3);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: var(--white);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            margin: 25px 20px 15px;
+            color: var(--dark-gray);
+            display: flex;
+            align-items: center;
+        }
+
+        .section-title i {
+            margin-right: 10px;
+            color: var(--coral);
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            padding: 0 20px;
+        }
+
+        .action-button {
+            background-color: var(--white);
+            border: none;
+            border-radius: 12px;
+            padding: 20px 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+        }
+
+        .action-button:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .action-button i {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            color: var(--teal);
+        }
+
+        .action-button p {
+            font-size: 0.9rem;
+            color: var(--dark-gray);
+        }
+
+        .rewards-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            padding: 0 20px;
+            margin-bottom: 20px;
+        }
+
+        .reward-card {
+            background-color: var(--white);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s;
+            position: relative;
+        }
+
+        .reward-card:active {
+            transform: translateY(2px);
+        }
+
+        .reward-image {
+            height: 150px;
+            width: auto;
+            /*       height: 100px; */
+            background-color: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #aaa;
+            font-size: 2rem;
+        }
+
+        .reward-info {
+            padding: 12px;
+        }
+
+        .reward-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--dark-gray);
+        }
+
+        .reward-points {
+            font-size: 0.8rem;
+            color: var(--coral);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+        }
+
+        .reward-points i {
+            margin-right: 5px;
+        }
+
+        .achievements-list {
+            padding: 0 20px;
+            margin-bottom: 20px;
+        }
+
+        .achievement-item {
+            background-color: var(--white);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+        }
+
+        .achievement-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--teal);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-size: 1.5rem;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+
+        .achievement-info {
+            flex-grow: 1;
+        }
+
+        .achievement-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--dark-gray);
+        }
+
+        .achievement-description {
+            font-size: 0.8rem;
+            color: #777;
+        }
+
+        .locked-achievement {
+            opacity: 0.5;
+        }
+
+        .locked-achievement .achievement-icon {
+            background-color: #aaa;
+        }
+
+        .locked-achievement .achievement-icon::after {
+            content: "🔒";
+            position: absolute;
+            font-size: 1rem;
+        }
+
+        .nav-tabs {
+            display: flex;
+            justify-content: space-around;
+            background-color: var(--white);
+            padding: 15px 20px;
+            border-radius: 15px 15px 0 0;
+            box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.05);
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            max-width: 480px;
+            margin: 0 auto;
+            z-index: 100;
+        }
+
+        .nav-tab {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: #aaa;
+            font-size: 0.8rem;
+            transition: color 0.2s;
+        }
+
+        .nav-tab i {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
+
+        .nav-tab.active {
+            color: var(--teal);
+        }
+
+        .page {
+            display: none;
+            padding-bottom: 80px;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+
+        .modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background-color: var(--white);
+            border-radius: 15px;
+            width: 90%;
+            max-width: 400px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            transform: translateY(20px);
+            opacity: 0;
+            transition: transform 0.3s, opacity 0.3s;
+        }
+
+        .modal.active .modal-content {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .modal-title {
+            font-size: 1.2rem;
+            color: var(--dark-gray);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #aaa;
+            cursor: pointer;
+        }
+
+        .modal-body {
+            margin-bottom: 20px;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .btn-primary {
+            background-color: var(--teal);
+            color: var(--white);
+        }
+
+        .btn-secondary {
+            background-color: #f0f0f0;
+            color: var(--dark-gray);
+            margin-right: 10px;
+        }
+
+        .reward-detail {
+            text-align: center;
+        }
+
+        .reward-detail-image {
+            width: 100px;
+            height: 100px;
+            background-color: #f0f0f0;
+            border-radius: 10px;
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            color: #aaa;
+        }
+
+        .reward-detail-title {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: var(--dark-gray);
+        }
+
+        .reward-detail-description {
+            font-size: 0.9rem;
+            color: #777;
+            margin-bottom: 15px;
+        }
+
+        .reward-detail-points {
+            font-size: 1.1rem;
+            color: var(--coral);
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .reward-detail-points i {
+            margin-right: 5px;
+        }
+
+        .history-list {
+            padding: 0 20px;
+        }
+
+        .history-item {
+            background-color: var(--white);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .history-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--dark-gray);
+        }
+
+        .history-date {
+            font-size: 0.8rem;
+            color: #aaa;
+        }
+
+        .history-points {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .history-points.positive {
+            color: var(--teal);
+        }
+
+        .history-points.negative {
+            color: var(--coral);
+        }
+
+        .redemption-code {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .redemption-code-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: var(--dark-gray);
+            margin-bottom: 5px;
+        }
+
+        .redemption-code-label {
+            font-size: 0.8rem;
+            color: #777;
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+
+        .loading-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--white);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            background-color: var(--dark-gray);
+            color: var(--white);
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            z-index: 2000;
+            transition: transform 0.3s;
+            max-width: 90%;
+        }
+
+        .notification.active {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .notification.success {
+            background-color: var(--teal);
+        }
+
+        .notification.error {
+            background-color: var(--coral);
+        }
+
+        .achievement-unlocked {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.8);
+            background-color: var(--white);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+            max-width: 90%;
+        }
+
+        .achievement-unlocked.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .achievement-unlocked-icon {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            animation: bounce 1s ease infinite;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .achievement-unlocked-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--dark-gray);
+            margin-bottom: 5px;
+        }
+
+        .achievement-unlocked-description {
+            font-size: 0.9rem;
+            color: #777;
+            margin-bottom: 15px;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: var(--coral);
+            opacity: 0;
+        }
+
+        @keyframes confetti-fall {
+            0% {
+                transform: translateY(0) rotate(0deg);
+            }
+
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+            }
+        }
+
+        .confetti {
+            pointer-events: none;
+            position: absolute;
+            top: 0;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 30px 20px;
+            color: #aaa;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+
+        .empty-state p {
+            font-size: 0.9rem;
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .shake {
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            10%,
+            30%,
+            50%,
+            70%,
+            90% {
+                transform: translateX(-5px);
+            }
+
+            20%,
+            40%,
+            60%,
+            80% {
+                transform: translateX(5px);
+            }
+        }
+
+        .opacity-50 {
+            opacity: 0.5;
+        }
+
+        .text-red-500 {
+            color: #ef4444;
+        }
+
+        .text-xs {
+            font-size: 0.75rem;
+        }
+
+        .mt-1 {
+            margin-top: 0.25rem;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .qr-code-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            padding: 20px;
+        }
+
+        .qr-code-image {
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .qr-code-info {
+            text-align: center;
+            color: #777;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+
+        <div id="home-page" class="page active">
+            <div class="header">
+                <h1>Food Rewards</h1>
+                <p>สะสมแต้ม รับรางวัล</p>
+            </div>
+
+            <div class="profile-section">
+                <div class="profile-info">
+
+                    <div class="w-14 h-14 rounded-full overflow-hidden border-2 border-accent-cyan mr-3">
+                        <img id="userImg"
+                            src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExcjhjcWswOWk5ZGdnZ29oZjE3ZmFmd3dxeTBuMTdtemhmaXFhMXl0YyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/U5DM9YQUbZ2aIVgpKZ/giphy.gif"
+                            alt="User" class="w-full h-full object-cover">
+                    </div>
+
+                    <div class="profile-details">
+                        <h2 id="user-name">กำลังโหลด...</h2>
+                        <p>สมาชิก</p>
+                    </div>
+                </div>
+
+                <div class="points-display">
+                    <h3 id="user-points">0</h3>
+                    <p>แต้มสะสม</p>
+
+                    <div class="level-progress">
+                        <div class="level-info">
+                            <span>ระดับ <span id="user-level">1</span></span>
+                            <span>ระดับ <span id="next-level">2</span></span>
+                        </div>
+                        <div class="progress-bar">
+                            <div id="level-progress-fill" class="progress-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 class="section-title"><i class="fas fa-bolt"></i> ทำรายการ</h2>
+
+            <div class="action-buttons">
+                <button class="action-button" onclick="openScannerModal()">
+                    <i class="fas fa-qrcode"></i>
+                    <p>สแกน QR Code</p>
+                </button>
+                <button class="action-button" onclick="openMyQRModal()">
+                    <i class="fas fa-mobile-alt"></i>
+                    <p>QR Code ของฉัน</p>
+                </button>
+                <button class="action-button" onclick="navigateTo('rewards-page')">
+                    <i class="fas fa-gift"></i>
+                    <p>แลกของรางวัล</p>
+                </button>
+                <button class="action-button" onclick="navigateTo('achievements-page')">
+                    <i class="fas fa-trophy"></i>
+                    <p>ความสำเร็จ</p>
+                </button>
+            </div>
+
+            <h2 class="section-title"><i class="fas fa-trophy"></i> ความสำเร็จล่าสุด</h2>
+
+            <div class="achievements-list" id="recent-achievements">
+
+                <div class="empty-state">
+                    <i class="fas fa-trophy"></i>
+                    <p>ยังไม่มีความสำเร็จ</p>
+                </div>
+            </div>
+
+            <h2 class="section-title"><i class="fas fa-history"></i> ประวัติล่าสุด</h2>
+
+            <div class="history-list" id="recent-history">
+                <!-- โหลดข้อมูล history -->
+                <div class="empty-state">
+                    <i class="fas fa-history"></i>
+                    <p>ยังไม่มีประวัติการทำรายการ</p>
+                </div>
+            </div>
+        </div>
+
+
+        <div id="rewards-page" class="page">
+            <div class="header">
+                <h1>ของรางวัล</h1>
+                <p>แลกแต้มเพื่อรับของรางวัล</p>
+            </div>
+
+            <div class="profile-section">
+                <div class="points-display">
+                    <h3 id="rewards-user-points">0</h3>
+                    <p>แต้มสะสม</p>
+                </div>
+            </div>
+
+            <div class="rewards-grid" id="rewards-grid">
+                <!-- โหลด Rewards  -->
+            </div>
+        </div>
+
+
+        <div id="achievements-page" class="page">
+            <div class="header">
+                <h1>ความสำเร็จ</h1>
+                <p>รวบรวมความสำเร็จทั้งหมด</p>
+            </div>
+
+            <div class="achievements-list" id="all-achievements">
+                <!-- โหลด All achievements -->
+            </div>
+        </div>
+
+
+        <div id="history-page" class="page">
+            <div class="header">
+                <h1>ประวัติ</h1>
+                <p>ประวัติการทำรายการทั้งหมด</p>
+            </div>
+
+            <div class="history-list" id="all-history">
+                <!--โหลดประวัติ All history -->
+            </div>
+        </div>
+
+
+        <div class="nav-tabs">
+            <a href="#" class="nav-tab active" onclick="navigateTo('home-page')">
+                <i class="fas fa-home"></i>
+                <span>หน้าหลัก</span>
+            </a>
+            <a href="#" class="nav-tab" onclick="navigateTo('rewards-page')">
+                <i class="fas fa-gift"></i>
+                <span>รางวัล</span>
+            </a>
+            <a href="#" class="nav-tab" onclick="navigateTo('achievements-page')">
+                <i class="fas fa-trophy"></i>
+                <span>ความสำเร็จ</span>
+            </a>
+            <a href="#" class="nav-tab" onclick="navigateTo('history-page')">
+                <i class="fas fa-history"></i>
+                <span>ประวัติ</span>
+            </a>
+        </div>
+    </div>
+
+
+    <div id="scanner-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">สแกน QR Code</h3>
+                <button class="modal-close" onclick="closeModal('scanner-modal')">×</button>
+            </div>
+            <div class="modal-body">
+                <p class="text-center">กำลังเปิดกล้องสำหรับสแกน QR Code...</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('scanner-modal')">ยกเลิก</button>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="myqr-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">QR Code ของฉัน</h3>
+                <button class="modal-close" onclick="closeModal('myqr-modal')">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="qr-code-container">
+                    <img id="user-qr-code" class="qr-code-image" src="" alt="User QR Code" style="display: none;">
+                    <div class="qr-code-info">
+                        <p>แสดง QR Code นี้ให้ร้านค้าเพื่อรับแต้ม</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="closeModal('myqr-modal')">ปิด</button>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="reward-detail-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">รายละเอียดรางวัล</h3>
+                <button class="modal-close" onclick="closeModal('reward-detail-modal')">❌</button>
+            </div>
+            <div class="modal-body">
+                <div class="reward-detail">
+                    <div class="reward-detail-image">
+                        <img id="rewardImage" src="" alt="reward" class="w-full h-full object-cover">
+                    </div>
+                    <h3 id="reward-detail-title" class="reward-detail-title">ชื่อรางวัล</h3>
+                    <p id="reward-detail-description" class="reward-detail-description">รายละเอียดรางวัล</p>
+                    <div id="reward-detail-points" class="reward-detail-points">
+                        <i class="fas fa-star"></i> 100 แต้ม
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('reward-detail-modal')">ยกเลิก</button>
+                <button id="redeem-button" class="btn btn-primary" onclick="redeemReward()">แลกรางวัล</button>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="redemption-success-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">แลกรางวัลสำเร็จ</h3>
+                <button class="modal-close" onclick="closeModal('redemption-success-modal')">❌</button>
+            </div>
+            <div class="modal-body">
+                <div class="reward-detail">
+                    <div class="reward-detail-image">
+                        <i class="fas fa-check-circle" style="color: var(--teal);"></i>
+                    </div>
+                    <h3 id="success-reward-title" class="reward-detail-title">ชื่อรางวัล</h3>
+                    <p class="reward-detail-description">คุณได้แลกรางวัลนี้เรียบร้อยแล้ว</p>
+
+                    <div class="redemption-code">
+                        <p id="redemption-code-value" class="redemption-code-value">ABCD1234</p>
+                        <p class="redemption-code-label">รหัสแลกรับรางวัล</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="closeModal('redemption-success-modal')">ตกลง</button>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="spinner"></div>
+    </div>
+
+
+    <div id="notification" class="notification error">
+        <span id="notification-message">เกิดข้อผิดพลาดในการโหลดข้อมูลผู้ใช้</span>
+    </div>
+
+
+    <div id="achievement-unlocked" class="achievement-unlocked">
+        <div id="achievement-unlocked-icon" class="achievement-unlocked-icon">🏆</div>
+        <h3 id="achievement-unlocked-title" class="achievement-unlocked-title">ความสำเร็จใหม่!</h3>
+        <p id="achievement-unlocked-description" class="achievement-unlocked-description">คุณได้รับความสำเร็จใหม่</p>
+        <button class="btn btn-primary" onclick="closeAchievementUnlocked()">ตกลง</button>
+    </div>
+
+    <script>
+       function _0x403c(){const _0xc43856=['DOMContentLoaded','achievement-item\x20','split','เกิดข้อผิดพลาดในการโหลดความสำเร็จ','Error\x20formatting\x20date:','active','borderRadius','body','catch','Scan\x20error:','scanCodeV2','https://api.qrserver.com/v1/create-qr-code/?data=','เกิดข้อผิดพลาดในการโหลดข้อมูลผู้ใช้','เดี๋ยวก่อน!','classList','onmouseleave','disabled','rewards','achievement-unlocked-description','message','history-item\x20fade-in','.modal-content','\x27)\x22]','https://line.me/R/ti/p/','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22empty-state\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<i\x20class=\x22fas\x20fa-trophy\x22></i>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<p>ยังไม่มีความสำเร็จ</p>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20','ไม่สามารถใช้งานการสแกน\x20QR\x20Code\x20ได้','toLocaleString','displayName','var(--teal)','translateY(0)','50%','error','redemption-success-modal','querySelector','login','achievements','transactions','block','reward-card\x20','4260916cwgZZB','isInClient','&size=200x200','redemption-code-value','getDecodedIDToken','fire','addPoints','\x0a\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22history-header\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<h3\x20class=\x22history-title\x22>','code','แต้มไม่พอ','position','แลกรางวัล','reward-detail-modal','82495CNnRSN','8mWbVfC','className','opacity-50','สมาชิก','min','src','default','scrollTo','createElement','confetti','then','<i\x20class=\x22fas\x20fa-star\x22></i>\x20','resumeTimer','style','getHours','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22reward-image\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<img\x20\x20src=\x22','value','\x22\x20alt=\x22reward\x22\x20class=\x22w-full\x20h-full\x20object-cover\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22reward-info\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<h3\x20class=\x22reward-title\x22>','length','https://script.google.com/macros/s/AKfycbwCdQ29DcGQVsNd-3xZxRTe56EiM14vESChjw9ffUPwi3sktCLZdayZuNhCIyub8LiSkQ/exec','translateY(20px)','pointsRequired','floor','add','top','remove','9gSdwUZ','left','stock','getUserInfo','absolute','redemptionCode','\x20น.','ส่งเข้าแชทเรียบร้อย','reward-detail-description','positive','success','\x20แต้ม\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20','achievement-unlocked-icon','rewards-user-points','เกิดข้อผิดพลาดในการโหลดข้อมูล','getElementById','sort','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22empty-state\x22\x20style=\x22grid-column:\x20span\x202;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<i\x20class=\x22fas\x20fa-gift\x22></i>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<p>ยังไม่มีรางวัล</p>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20','innerHTML','4364330GHfwJr','all-achievements','1180227XRFJUo','var(--coral)','https://img.icons8.com/?size=100&id=8v2YbO_KCK_5&format=png&color=000000','emoji','user-name','getOS','QR\x20Code\x20scanned:','เกิดข้อผิดพลาดในการสแกน\x20QR\x20Code','เกิดข้อผิดพลาดในการโหลดรางวัล','mixin','toLocaleDateString','getUserAchievements','div','ยกเลิกการสแกน','image','</h3>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span\x20class=\x22history-date\x22>','numeric','unlocked','80711XiUjrJ','forEach','rewards-grid','getDate','scanner-modal','notification-message','padStart','notification\x20','CANCEL','.nav-tab','newLevel','top-end','Network\x20error','scanCode','recent-achievements','log','2wBnZTc','</p>\x0a\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20','description','level-progress-fill','isLoggedIn','newPoints','some','41695Vzjmnv','action','หมด','finally','</span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22history-points\x20','querySelectorAll','level','เกิดข้อผิดพลาดในการแลกรางวัล','</h3>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22reward-points\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<i\x20class=\x22fas\x20fa-star\x22></i>\x20','.nav-tab[onclick=\x22navigateTo(\x27','parse','shareTargetPicker','ios','textContent','\x20แต้ม','filter','opacity','keys','var(--brown)','getAchievements','location','href','backgroundColor','title','@028ffvlr','1482132vkrnWl','getMinutes','Failed\x20to\x20load\x20user\x20achievements','เพิ่ม\x20','s\x20linear\x20forwards','POST','width','appendChild','onmouseenter','loading-overlay','getProfile','reward-detail-title','android','registerUser','rewardImage','alert','Send\x20Message\x20Success!','TargetPicker\x20was\x20closed!','init','application/x-www-form-urlencoded','</h3>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<p\x20class=\x22achievement-description\x22>','timestamp','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20','เกิดข้อผิดพลาดในการโหลดประวัติ','#FF4500','append','achievement-unlocked','find','\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20','random','redeem-button','96iopnWO','.page','height','getTime','slice','web','points','userId','achievement-unlocked-title','Failed\x20to\x20load\x20achievements','getFriendship','sendMessages','getFullYear','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22empty-state\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<i\x20class=\x22fas\x20fa-history\x22></i>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<p>ยังไม่มีประวัติการทำรายการ</p>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20','all-history','<div\x20class=\x22text-red-500\x20text-xs\x20mt-1\x22>หมด</div>'];_0x403c=function(){return _0xc43856;};return _0x403c();}const _0x31ce80=_0x151e;function _0x151e(_0xe0a5fb,_0x5e682d){const _0x403c8e=_0x403c();return _0x151e=function(_0x151e84,_0x55b590){_0x151e84=_0x151e84-0xa6;let _0x4f6413=_0x403c8e[_0x151e84];return _0x4f6413;},_0x151e(_0xe0a5fb,_0x5e682d);}(function(_0x2f0c9c,_0x567537){const _0x538584=_0x151e,_0x5ee33a=_0x2f0c9c();while(!![]){try{const _0x17d2b4=parseInt(_0x538584(0xe2))/0x1+-parseInt(_0x538584(0xf2))/0x2*(parseInt(_0x538584(0xd0))/0x3)+parseInt(_0x538584(0x112))/0x4+parseInt(_0x538584(0xf9))/0x5*(parseInt(_0x538584(0x131))/0x6)+-parseInt(_0x538584(0x175))/0x7*(-parseInt(_0x538584(0x176))/0x8)+-parseInt(_0x538584(0xbb))/0x9*(-parseInt(_0x538584(0xce))/0xa)+-parseInt(_0x538584(0x168))/0xb;if(_0x17d2b4===_0x567537)break;else _0x5ee33a['push'](_0x5ee33a['shift']());}catch(_0x424180){_0x5ee33a['push'](_0x5ee33a['shift']());}}}(_0x403c,0x3d8d9));const API_URL=_0x31ce80(0xb4),LIFF_ID='2007550102-1K9Dda77',QR_API_URL=_0x31ce80(0x14c),botBasicId=_0x31ce80(0x111);let userData=null,rewards=[],achievements=[],transactions=[],currentReward=null;document['addEventListener'](_0x31ce80(0x141),function(){initializeLIFF();});function initializeLIFF(){const _0x2b80d1=_0x31ce80;liff[_0x2b80d1(0x124)]({'liffId':LIFF_ID,'withLoginOnExternalBrowser':!![]})[_0x2b80d1(0xab)](()=>{const _0x59514d=_0x2b80d1;!liff[_0x59514d(0xf6)]()?liff[_0x59514d(0x163)]({'redirectUri':window[_0x59514d(0x10d)][_0x59514d(0x10e)]}):(initializeApp(),liff[_0x59514d(0x13b)]()['then'](_0x185362=>{const _0x4692cf=_0x59514d;!_0x185362['friendFlag']&&Swal['fire'](_0x4692cf(0x14e),'คุณยังไม่ได้เป็นเพื่อนกับเรา','error')[_0x4692cf(0xab)](()=>{const _0x417df2=_0x4692cf;window[_0x417df2(0x10d)]=_0x417df2(0x158)+botBasicId;});}));})[_0x2b80d1(0x149)](_0x10b704=>{const _0x297143=_0x2b80d1;showNotification('เกิดข้อผิดพลาดในการเชื่อมต่อกับ\x20LINE',_0x297143(0x160)),console['error'](_0x10b704);});}function initializeApp(){const _0x2e0ab8=_0x31ce80;showLoading(),liff[_0x2e0ab8(0x11c)]()[_0x2e0ab8(0xab)](_0x305021=>{const _0x5952d7=_0x2e0ab8;return callAPI(_0x5952d7(0x11f),{'userId':_0x305021['userId'],'displayName':_0x305021[_0x5952d7(0x15c)]});})[_0x2e0ab8(0xab)](_0x541964=>{const _0x47fd9e=_0x2e0ab8;_0x541964[_0x47fd9e(0xc5)]?(userData=_0x541964['user'],updateUserInfo(),loadRewards(),loadAchievements(),loadHistory()):showNotification(_0x47fd9e(0x14d),_0x47fd9e(0x160));})[_0x2e0ab8(0x149)](_0x425f7e=>{const _0x3c1528=_0x2e0ab8;showNotification(_0x3c1528(0xc9),_0x3c1528(0x160)),console[_0x3c1528(0x160)](_0x425f7e);})[_0x2e0ab8(0xfc)](()=>{hideLoading();});}function updateUserInfo(){const _0x528f5e=_0x31ce80;if(!userData)return;document[_0x528f5e(0xca)](_0x528f5e(0xd4))[_0x528f5e(0x106)]=userData[_0x528f5e(0x15c)]||_0x528f5e(0x179),document['getElementById']('userImg')['src']=liff[_0x528f5e(0x16c)]()['picture']||_0x528f5e(0xd2),document['getElementById']('user-points')['textContent']=userData[_0x528f5e(0x137)]['toLocaleString'](),document[_0x528f5e(0xca)](_0x528f5e(0xc8))[_0x528f5e(0x106)]=userData['points']['toLocaleString'](),document[_0x528f5e(0xca)]('user-level')['textContent']=userData['level'],document[_0x528f5e(0xca)]('next-level')['textContent']=userData['level']+0x1;const _0xa30497=userData[_0x528f5e(0x137)]-(userData[_0x528f5e(0xff)]-0x1)*0x64,_0x5e1198=Math[_0x528f5e(0x17a)](_0xa30497,0x64);document[_0x528f5e(0xca)](_0x528f5e(0xf5))[_0x528f5e(0xae)][_0x528f5e(0x118)]=_0x5e1198+'%';}function generateUserQRCode(){const _0x37992e=_0x31ce80;if(!userData)return'';const _0x52aad2=QR_API_URL+encodeURIComponent(userData[_0x37992e(0x138)])+_0x37992e(0x16a);return _0x52aad2;}function openMyQRModal(){const _0x31fad4=_0x31ce80,_0x374d8e=document[_0x31fad4(0xca)]('user-qr-code'),_0x3d8fd9=generateUserQRCode();_0x3d8fd9&&(_0x374d8e[_0x31fad4(0xa6)]=_0x3d8fd9,_0x374d8e[_0x31fad4(0xae)]['display']=_0x31fad4(0x166)),openModal('myqr-modal');}function loadRewards(){const _0x5774d3=_0x31ce80;callAPI('getRewards')[_0x5774d3(0xab)](_0x30814c=>{const _0x72c0a3=_0x5774d3;_0x30814c[_0x72c0a3(0xc5)]?(rewards=_0x30814c[_0x72c0a3(0x152)],displayRewards()):showNotification(_0x72c0a3(0xd8),'error');})[_0x5774d3(0x149)](_0x14bb50=>{const _0x14c9e5=_0x5774d3;showNotification('เกิดข้อผิดพลาดในการโหลดรางวัล',_0x14c9e5(0x160)),console[_0x14c9e5(0x160)](_0x14bb50);});}function displayRewards(){const _0x20e806=_0x31ce80,_0x5b0593=document[_0x20e806(0xca)](_0x20e806(0xe4));_0x5b0593[_0x20e806(0xcd)]='';if(rewards[_0x20e806(0xb3)]===0x0){_0x5b0593['innerHTML']=_0x20e806(0xcc);return;}rewards['forEach'](_0x5e007d=>{const _0x37bda0=_0x20e806,_0x119db2=userData[_0x37bda0(0x137)]>=_0x5e007d[_0x37bda0(0xb6)],_0x389479=_0x5e007d[_0x37bda0(0xbd)]!==-0x1&&_0x5e007d[_0x37bda0(0xbd)]<=0x0,_0x73672c=document[_0x37bda0(0xa9)](_0x37bda0(0xdc));_0x73672c[_0x37bda0(0x177)]=_0x37bda0(0x167)+(!_0x119db2||_0x389479?_0x37bda0(0x178):''),_0x73672c['onclick']=()=>showRewardDetail(_0x5e007d),_0x73672c[_0x37bda0(0xcd)]=_0x37bda0(0xb0)+_0x5e007d[_0x37bda0(0xde)]+_0x37bda0(0xb2)+_0x5e007d[_0x37bda0(0x110)]+_0x37bda0(0x101)+_0x5e007d[_0x37bda0(0xb6)][_0x37bda0(0x15b)]()+_0x37bda0(0xc6)+(_0x389479?_0x37bda0(0x140):'')+_0x37bda0(0x128),_0x5b0593[_0x37bda0(0x119)](_0x73672c);});}function showRewardDetail(_0x8e228d){const _0x5af873=_0x31ce80;currentReward=_0x8e228d,document[_0x5af873(0xca)](_0x5af873(0x120))[_0x5af873(0xa6)]=_0x8e228d[_0x5af873(0xde)],document[_0x5af873(0xca)](_0x5af873(0x11d))['textContent']=_0x8e228d[_0x5af873(0x110)],document[_0x5af873(0xca)](_0x5af873(0xc3))[_0x5af873(0x106)]=_0x8e228d[_0x5af873(0xf4)],document[_0x5af873(0xca)]('reward-detail-points')[_0x5af873(0xcd)]=_0x5af873(0xac)+_0x8e228d[_0x5af873(0xb6)]['toLocaleString']()+_0x5af873(0x107);const _0xef26cd=userData[_0x5af873(0x137)]>=_0x8e228d[_0x5af873(0xb6)],_0x17df6e=_0x8e228d[_0x5af873(0xbd)]!==-0x1&&_0x8e228d['stock']<=0x0,_0xff8b24=document[_0x5af873(0xca)](_0x5af873(0x130));_0xff8b24[_0x5af873(0x151)]=!_0xef26cd||_0x17df6e,_0xff8b24[_0x5af873(0x14f)]['toggle'](_0x5af873(0x178),!_0xef26cd||_0x17df6e);if(!_0xef26cd)_0xff8b24[_0x5af873(0x106)]=_0x5af873(0x171);else _0x17df6e?_0xff8b24[_0x5af873(0x106)]=_0x5af873(0xfb):_0xff8b24['textContent']=_0x5af873(0x173);openModal('reward-detail-modal');}function redeemReward(){const _0x406956=_0x31ce80;if(!currentReward)return;showLoading(),callAPI('redeemReward',{'userId':userData['userId'],'rewardId':currentReward['id']})['then'](_0x2284b6=>{const _0x438e3a=_0x151e;if(_0x2284b6['success']){userData[_0x438e3a(0x137)]=_0x2284b6[_0x438e3a(0xf7)],updateUserInfo(),document[_0x438e3a(0xca)]('success-reward-title')[_0x438e3a(0x106)]=currentReward['title'],document[_0x438e3a(0xca)](_0x438e3a(0x16b))[_0x438e3a(0x106)]=_0x2284b6[_0x438e3a(0xc0)],closeModal(_0x438e3a(0x174)),openModal(_0x438e3a(0x161)),loadRewards(),loadHistory();const _0x24ebde=JSON[_0x438e3a(0x103)](_0x2284b6[_0x438e3a(0x148)]);sendText([_0x24ebde]),createConfetti();}else showNotification(_0x2284b6[_0x438e3a(0x154)]||_0x438e3a(0x100),'error');})[_0x406956(0x149)](_0x55675f=>{const _0xfb1ef4=_0x406956;showNotification(_0xfb1ef4(0x100),'error'),console[_0xfb1ef4(0x160)](_0x55675f);})['finally'](()=>{hideLoading();});}function loadAchievements(){const _0x48dbf3=_0x31ce80;callAPI(_0x48dbf3(0x10c))[_0x48dbf3(0xab)](_0x4b78df=>{const _0x39c43c=_0x48dbf3;if(_0x4b78df[_0x39c43c(0xc5)])return achievements=_0x4b78df[_0x39c43c(0x164)],callAPI('getUserAchievements',{'userId':userData[_0x39c43c(0x138)]});else throw new Error(_0x39c43c(0x13a));})[_0x48dbf3(0xab)](_0x25ac17=>{const _0x56c390=_0x48dbf3;if(_0x25ac17[_0x56c390(0xc5)]){const _0x1d4af7=_0x25ac17[_0x56c390(0x164)];achievements[_0x56c390(0xe3)](_0x1ad204=>{const _0x53a88f=_0x56c390;_0x1ad204[_0x53a88f(0xe1)]=_0x1d4af7[_0x53a88f(0xf8)](_0x482655=>_0x482655['id']===_0x1ad204['id']);}),displayAchievements();}else throw new Error(_0x56c390(0x114));})[_0x48dbf3(0x149)](_0x4b9d75=>{const _0x41789d=_0x48dbf3;showNotification(_0x41789d(0x144),_0x41789d(0x160)),console[_0x41789d(0x160)](_0x4b9d75);});}function displayAchievements(){const _0x1b201c=_0x31ce80,_0x3d7973=document[_0x1b201c(0xca)](_0x1b201c(0xf0)),_0x5bb9d0=document[_0x1b201c(0xca)](_0x1b201c(0xcf));_0x3d7973['innerHTML']='',_0x5bb9d0[_0x1b201c(0xcd)]='';const _0x220409=achievements[_0x1b201c(0x108)](_0x329d11=>_0x329d11['unlocked']),_0x171115=achievements[_0x1b201c(0x108)](_0x10bf72=>!_0x10bf72[_0x1b201c(0xe1)]);_0x220409[_0x1b201c(0xb3)]===0x0?_0x3d7973['innerHTML']='\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22empty-state\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<i\x20class=\x22fas\x20fa-trophy\x22></i>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<p>ยังไม่มีความสำเร็จ</p>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20':_0x220409[_0x1b201c(0x135)](0x0,0x3)['forEach'](_0x37e49f=>{const _0x32713c=_0x1b201c,_0x1f5c59=createAchievementItem(_0x37e49f);_0x3d7973[_0x32713c(0x119)](_0x1f5c59);}),achievements[_0x1b201c(0xb3)]===0x0?_0x5bb9d0[_0x1b201c(0xcd)]=_0x1b201c(0x159):(_0x220409[_0x1b201c(0xe3)](_0x1863c6=>{const _0x1977a6=createAchievementItem(_0x1863c6);_0x5bb9d0['appendChild'](_0x1977a6);}),_0x171115[_0x1b201c(0xe3)](_0x48d293=>{const _0x31794c=_0x1b201c,_0x5a1e3e=createAchievementItem(_0x48d293,!![]);_0x5bb9d0[_0x31794c(0x119)](_0x5a1e3e);}));}function createAchievementItem(_0x20cf67,_0x1c1e84=![]){const _0x2d242f=_0x31ce80,_0x2566f6=document['createElement'](_0x2d242f(0xdc));return _0x2566f6[_0x2d242f(0x177)]=_0x2d242f(0x142)+(_0x1c1e84?'locked-achievement':''),_0x2566f6[_0x2d242f(0xcd)]='\x0a\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22achievement-icon\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20'+(_0x20cf67[_0x2d242f(0xd3)]||'🏆')+'\x0a\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22achievement-info\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<h3\x20class=\x22achievement-title\x22>'+_0x20cf67['title']+_0x2d242f(0x126)+_0x20cf67[_0x2d242f(0xf4)]+_0x2d242f(0xf3),_0x2566f6;}function loadHistory(){const _0x148590=_0x31ce80;callAPI(_0x148590(0xbe),{'userId':userData[_0x148590(0x138)]})['then'](_0x1d3cd8=>{const _0x14e909=_0x148590;_0x1d3cd8[_0x14e909(0xc5)]?(transactions=_0x1d3cd8[_0x14e909(0x165)]||[],displayHistory()):showNotification(_0x14e909(0x129),'error');})['catch'](_0x513882=>{const _0x429764=_0x148590;showNotification(_0x429764(0x129),_0x429764(0x160)),console[_0x429764(0x160)](_0x513882);});}function displayHistory(){const _0x4bfcb4=_0x31ce80,_0x5dff73=document[_0x4bfcb4(0xca)]('recent-history'),_0x4237fc=document[_0x4bfcb4(0xca)](_0x4bfcb4(0x13f));_0x5dff73[_0x4bfcb4(0xcd)]='',_0x4237fc[_0x4bfcb4(0xcd)]='';if(transactions['length']===0x0){_0x5dff73[_0x4bfcb4(0xcd)]='\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22empty-state\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<i\x20class=\x22fas\x20fa-history\x22></i>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<p>ยังไม่มีประวัติการทำรายการ</p>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20',_0x4237fc[_0x4bfcb4(0xcd)]=_0x4bfcb4(0x13e);return;}const _0x51898b=[...transactions][_0x4bfcb4(0xcb)]((_0x1f9a50,_0x38a53d)=>{const _0x43d889=_0x4bfcb4;return new Date(_0x38a53d[_0x43d889(0x127)])-new Date(_0x1f9a50['timestamp']);});_0x51898b['slice'](0x0,0x5)['forEach'](_0xbf4840=>{const _0x18c1f0=_0x4bfcb4,_0x468b25=createHistoryItem(_0xbf4840);_0x5dff73[_0x18c1f0(0x119)](_0x468b25);}),_0x51898b[_0x4bfcb4(0xe3)](_0x5e5fee=>{const _0x4042f6=createHistoryItem(_0x5e5fee);_0x4237fc['appendChild'](_0x4042f6);});}function createHistoryItem(_0x1ca018){const _0x10a0cd=_0x31ce80,_0x301ac2=document[_0x10a0cd(0xa9)](_0x10a0cd(0xdc));_0x301ac2['className']=_0x10a0cd(0x155);const _0x54aec7=new Date(_0x1ca018[_0x10a0cd(0x127)]),_0x101ebd=formatDateShort(_0x54aec7['getMonth']()+0x1+'/'+_0x54aec7[_0x10a0cd(0xe5)]()+'/'+_0x54aec7[_0x10a0cd(0x13d)]()),_0x71b88f=_0x101ebd+'\x20'+_0x54aec7[_0x10a0cd(0xaf)]()+':'+String(_0x54aec7[_0x10a0cd(0x113)]())[_0x10a0cd(0xe8)](0x2,'0')+_0x10a0cd(0xc1),_0x1afbd2=_0x1ca018[_0x10a0cd(0x137)]>0x0;return _0x301ac2['innerHTML']=_0x10a0cd(0x16f)+_0x1ca018['description']+_0x10a0cd(0xdf)+_0x71b88f+_0x10a0cd(0xfd)+(_0x1afbd2?_0x10a0cd(0xc4):'negative')+_0x10a0cd(0x12e)+(_0x1afbd2?'+':'')+_0x1ca018[_0x10a0cd(0x137)][_0x10a0cd(0x15b)]()+'\x20แต้ม\x0a\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20',_0x301ac2;}function openScannerModal(){const _0x1113f2=_0x31ce80;openModal(_0x1113f2(0xe6)),startLIFFScanner();}function startLIFFScanner(){const _0x3e094b=_0x31ce80,_0xfcb0b6=liff[_0x3e094b(0xd5)]();if(_0xfcb0b6===_0x3e094b(0x105)||_0xfcb0b6===_0x3e094b(0x136)){if(!liff['scanCodeV2']){showNotification(_0x3e094b(0x15a),_0x3e094b(0x160)),closeModal(_0x3e094b(0xe6));return;}liff[_0x3e094b(0x14b)]()[_0x3e094b(0xab)](_0x983a3a=>{const _0x4cf43c=_0x3e094b;_0x983a3a&&(console[_0x4cf43c(0xf1)](_0x4cf43c(0xd6),_0x983a3a['value']),processQRCode(_0x983a3a['value']));})[_0x3e094b(0x149)](_0x3efe7d=>{const _0x35f05b=_0x3e094b;console[_0x35f05b(0x160)](_0x35f05b(0x14a),_0x3efe7d),_0x3efe7d[_0x35f05b(0x170)]===_0x35f05b(0xea)?showNotification(_0x35f05b(0xdd),'error'):showNotification(_0x35f05b(0xd7),'error');})[_0x3e094b(0xfc)](()=>{closeModal('scanner-modal');});}if(_0xfcb0b6===_0x3e094b(0x11e)){if(!liff['scanCodeV2']){showNotification(_0x3e094b(0x15a),'error'),closeModal('scanner-modal');return;}liff[_0x3e094b(0xef)]()['then'](_0x500c97=>{const _0x23fb62=_0x3e094b;_0x500c97&&(console[_0x23fb62(0xf1)]('QR\x20Code\x20scanned:',_0x500c97[_0x23fb62(0xb1)]),processQRCode(_0x500c97[_0x23fb62(0xb1)]));})[_0x3e094b(0x149)](_0xf1483=>{const _0x461fc5=_0x3e094b;console[_0x461fc5(0x160)](_0x461fc5(0x14a),_0xf1483),_0xf1483['code']===_0x461fc5(0xea)?showNotification(_0x461fc5(0xdd),_0x461fc5(0x160)):showNotification(_0x461fc5(0xd7),_0x461fc5(0x160));})[_0x3e094b(0xfc)](()=>{closeModal('scanner-modal');});}}function processQRCode(_0x2d2220){const _0x4ef378=_0x31ce80;showLoading(),callAPI(_0x4ef378(0x16e),{'userId':userData[_0x4ef378(0x138)],'qrCode':_0x2d2220})['then'](_0x5bda17=>{const _0x3a77a6=_0x4ef378;if(_0x5bda17[_0x3a77a6(0xc5)]){userData[_0x3a77a6(0x137)]=_0x5bda17[_0x3a77a6(0xf7)],userData[_0x3a77a6(0xff)]=_0x5bda17[_0x3a77a6(0xec)],updateUserInfo(),showNotification(_0x3a77a6(0x115)+_0x5bda17[_0x3a77a6(0x154)][_0x3a77a6(0x143)]('\x20')[0x1]+'\x20แต้มสำเร็จ!',_0x3a77a6(0xc5)),loadHistory(),loadRewards();const _0x299231=JSON[_0x3a77a6(0x103)](_0x5bda17[_0x3a77a6(0x148)]);sendText([_0x299231]),checkNewAchievements();}else showNotification(_0x5bda17[_0x3a77a6(0x154)]||'เกิดข้อผิดพลาดในการสแกน\x20QR\x20Code',_0x3a77a6(0x160));})['catch'](_0x3dfb54=>{const _0x1a7bd5=_0x4ef378;showNotification(_0x1a7bd5(0xd7),_0x1a7bd5(0x160)),console[_0x1a7bd5(0x160)](_0x3dfb54);})['finally'](()=>{hideLoading();});}function checkNewAchievements(){const _0x2a8317=_0x31ce80;callAPI(_0x2a8317(0xdb),{'userId':userData[_0x2a8317(0x138)]})[_0x2a8317(0xab)](_0x1bb5c3=>{const _0x5bcb01=_0x2a8317;if(_0x1bb5c3['success']){const _0x31edab=_0x1bb5c3[_0x5bcb01(0x164)][_0x5bcb01(0x108)](_0x291128=>!achievements[_0x5bcb01(0x12d)](_0x1d94fb=>_0x1d94fb['id']===_0x291128['id']&&_0x1d94fb['unlocked']));_0x31edab[_0x5bcb01(0xb3)]>0x0&&(achievements[_0x5bcb01(0xe3)](_0x11d175=>{const _0x322615=_0x5bcb01,_0x54ca5e=_0x1bb5c3[_0x322615(0x164)][_0x322615(0x12d)](_0x19bc3b=>_0x19bc3b['id']===_0x11d175['id']);_0x54ca5e&&(_0x11d175['unlocked']=!![]);}),displayAchievements(),showAchievementUnlocked(_0x31edab[0x0]));}})[_0x2a8317(0x149)](_0x17f74d=>{const _0x5dacae=_0x2a8317;console[_0x5dacae(0x160)](_0x17f74d);});}function showAchievementUnlocked(_0x447b25){const _0x56e8f9=_0x31ce80;document[_0x56e8f9(0xca)](_0x56e8f9(0xc7))[_0x56e8f9(0x106)]=_0x447b25[_0x56e8f9(0xd3)]||'🏆',document[_0x56e8f9(0xca)](_0x56e8f9(0x139))[_0x56e8f9(0x106)]=_0x447b25[_0x56e8f9(0x110)],document['getElementById'](_0x56e8f9(0x153))['textContent']=_0x447b25[_0x56e8f9(0xf4)],document[_0x56e8f9(0xca)]('achievement-unlocked')[_0x56e8f9(0x14f)][_0x56e8f9(0xb8)](_0x56e8f9(0x146)),createConfetti();}function closeAchievementUnlocked(){const _0x39953e=_0x31ce80;document['getElementById'](_0x39953e(0x12c))[_0x39953e(0x14f)][_0x39953e(0xba)](_0x39953e(0x146));}function createConfetti(){const _0x532923=_0x31ce80,_0x2347f0=document[_0x532923(0x148)],_0x4b2ccf=0x64,_0x353035=[_0x532923(0xd1),_0x532923(0x15d),_0x532923(0x10b),'#FFD700',_0x532923(0x12a)];for(let _0x5bd642=0x0;_0x5bd642<_0x4b2ccf;_0x5bd642++){const _0xc3819e=document['createElement'](_0x532923(0xdc));_0xc3819e[_0x532923(0x177)]=_0x532923(0xaa),_0xc3819e[_0x532923(0xae)][_0x532923(0xbc)]=Math[_0x532923(0x12f)]()*0x64+'%',_0xc3819e[_0x532923(0xae)][_0x532923(0x10f)]=_0x353035[Math[_0x532923(0xb7)](Math[_0x532923(0x12f)]()*_0x353035['length'])],_0xc3819e[_0x532923(0xae)][_0x532923(0x118)]=Math[_0x532923(0x12f)]()*0xa+0x5+'px',_0xc3819e[_0x532923(0xae)][_0x532923(0x133)]=Math[_0x532923(0x12f)]()*0xa+0x5+'px',_0xc3819e[_0x532923(0xae)][_0x532923(0x109)]=Math[_0x532923(0x12f)](),_0xc3819e['style'][_0x532923(0x172)]=_0x532923(0xbf),_0xc3819e[_0x532923(0xae)][_0x532923(0xb9)]='-'+Math[_0x532923(0x12f)]()*0x14+'px',_0xc3819e[_0x532923(0xae)][_0x532923(0x147)]=_0x532923(0x15f),_0xc3819e['style']['zIndex']=0x270f,_0xc3819e[_0x532923(0xae)]['animation']='confetti-fall\x20'+(Math['random']()*0x3+0x2)+_0x532923(0x116),_0x2347f0[_0x532923(0x119)](_0xc3819e),setTimeout(()=>{const _0x584ecf=_0x532923;_0xc3819e[_0x584ecf(0xba)]();},0x1388);}}function navigateTo(_0x5b4083){const _0x541867=_0x31ce80;document['querySelectorAll'](_0x541867(0x132))[_0x541867(0xe3)](_0x185a41=>{const _0x5deb86=_0x541867;_0x185a41[_0x5deb86(0x14f)][_0x5deb86(0xba)]('active');}),document[_0x541867(0xca)](_0x5b4083)[_0x541867(0x14f)][_0x541867(0xb8)](_0x541867(0x146)),document[_0x541867(0xfe)](_0x541867(0xeb))[_0x541867(0xe3)](_0x1fd65a=>{const _0x4239c4=_0x541867;_0x1fd65a[_0x4239c4(0x14f)][_0x4239c4(0xba)](_0x4239c4(0x146));}),document[_0x541867(0x162)](_0x541867(0x102)+_0x5b4083+_0x541867(0x157))['classList'][_0x541867(0xb8)](_0x541867(0x146)),window[_0x541867(0xa8)](0x0,0x0);}function openModal(_0x35097e){const _0x110185=_0x31ce80,_0xc019b6=document[_0x110185(0xca)](_0x35097e);_0xc019b6['classList'][_0x110185(0xb8)](_0x110185(0x146)),setTimeout(()=>{const _0x532674=_0x110185;_0xc019b6[_0x532674(0x162)](_0x532674(0x156))['style']['transform']=_0x532674(0x15e),_0xc019b6[_0x532674(0x162)](_0x532674(0x156))['style'][_0x532674(0x109)]='1';},0xa);}function closeModal(_0x50c273){const _0x30bd4d=_0x31ce80,_0xadb054=document[_0x30bd4d(0xca)](_0x50c273);_0xadb054[_0x30bd4d(0x162)](_0x30bd4d(0x156))[_0x30bd4d(0xae)]['transform']=_0x30bd4d(0xb5),_0xadb054[_0x30bd4d(0x162)](_0x30bd4d(0x156))[_0x30bd4d(0xae)][_0x30bd4d(0x109)]='0',setTimeout(()=>{const _0x5a4dfc=_0x30bd4d;_0xadb054[_0x5a4dfc(0x14f)][_0x5a4dfc(0xba)](_0x5a4dfc(0x146));},0x12c);}function showLoading(){const _0x4b57fb=_0x31ce80;document[_0x4b57fb(0xca)](_0x4b57fb(0x11b))[_0x4b57fb(0x14f)][_0x4b57fb(0xb8)](_0x4b57fb(0x146));}function hideLoading(){const _0x138f72=_0x31ce80;document[_0x138f72(0xca)](_0x138f72(0x11b))[_0x138f72(0x14f)][_0x138f72(0xba)]('active');}function showNotification(_0x46fa04,_0x156232=_0x31ce80(0xa7)){const _0x27f9e4=_0x31ce80,_0x4abc2b=document['getElementById']('notification');_0x4abc2b['className']=_0x27f9e4(0xe9)+_0x156232,document[_0x27f9e4(0xca)](_0x27f9e4(0xe7))[_0x27f9e4(0x106)]=_0x46fa04,_0x4abc2b[_0x27f9e4(0x14f)][_0x27f9e4(0xb8)]('active'),setTimeout(()=>{const _0x53d0e8=_0x27f9e4;_0x4abc2b[_0x53d0e8(0x14f)][_0x53d0e8(0xba)]('active');},0xbb8);}function callAPI(_0x2f4e8b,_0x176379={}){const _0x4e4e46=_0x31ce80,_0x15a69e=new URLSearchParams();return _0x15a69e[_0x4e4e46(0x12b)](_0x4e4e46(0xfa),_0x2f4e8b),Object[_0x4e4e46(0x10a)](_0x176379)[_0x4e4e46(0xe3)](_0x547ed8=>{const _0x20862b=_0x4e4e46;_0x15a69e[_0x20862b(0x12b)](_0x547ed8,_0x176379[_0x547ed8]);}),fetch(API_URL,{'method':_0x4e4e46(0x117),'headers':{'Content-Type':_0x4e4e46(0x125)},'body':_0x15a69e})['then'](_0x58a1f5=>_0x58a1f5['json']())[_0x4e4e46(0x149)](_0x632268=>{const _0x4552f4=_0x4e4e46;return console['error']('API\x20Error:',_0x632268),{'success':![],'message':_0x4552f4(0xee)};});}function formatDateShort(_0x1a05c2){const _0x228cfc=_0x31ce80;if(!_0x1a05c2)return'-';try{const _0x4f431c=new Date(_0x1a05c2);if(isNaN(_0x4f431c[_0x228cfc(0x134)]()))return _0x1a05c2;return _0x4f431c[_0x228cfc(0xda)]('th-TH',{'year':'numeric','month':'short','day':_0x228cfc(0xe0)});}catch(_0xe9b678){return console[_0x228cfc(0x160)](_0x228cfc(0x145),_0x1a05c2,_0xe9b678),_0x1a05c2;}}function sendText(_0x1566dd){const _0x51b08f=_0x31ce80;!liff[_0x51b08f(0x169)]()?shareTargetPicker(_0x1566dd):sendflex(_0x1566dd);}function sendflex(_0x42f9f8){const _0x4ca5c0=_0x31ce80;liff[_0x4ca5c0(0x13c)](_0x42f9f8)[_0x4ca5c0(0xab)](function(){const _0x52558b=_0x4ca5c0,_0x177cc3=Swal[_0x52558b(0xd9)]({'toast':!![],'position':_0x52558b(0xed),'showConfirmButton':![],'timer':0xbb8,'timerProgressBar':!![],'didOpen':_0x2c8920=>{const _0x58123b=_0x52558b;_0x2c8920[_0x58123b(0x11a)]=Swal['stopTimer'],_0x2c8920['onmouseleave']=Swal['resumeTimer'];}});_0x177cc3[_0x52558b(0x16d)]({'icon':_0x52558b(0xc5),'title':_0x52558b(0xc2)}),console[_0x52558b(0xf1)](_0x52558b(0x122));});}function shareTargetPicker(_0x43eac4){const _0x245a85=_0x31ce80;liff[_0x245a85(0x104)](_0x43eac4)[_0x245a85(0xab)](function(_0x2cd663){const _0x1befff=_0x245a85;if(_0x2cd663){const _0x3602cc=Swal[_0x1befff(0xd9)]({'toast':!![],'position':'top-end','showConfirmButton':![],'timer':0xbb8,'timerProgressBar':!![],'didOpen':_0x1b54f0=>{const _0x5093e5=_0x1befff;_0x1b54f0[_0x5093e5(0x11a)]=Swal['stopTimer'],_0x1b54f0[_0x5093e5(0x150)]=Swal[_0x5093e5(0xad)];}});_0x3602cc[_0x1befff(0x16d)]({'icon':_0x1befff(0xc5),'title':'ส่งเข้าแชทเรียบร้อย'});}else console[_0x1befff(0xf1)](_0x1befff(0x123));})['catch'](function(_0xf19ce){const _0x408ab9=_0x245a85;window[_0x408ab9(0x121)]('Failed\x20to\x20send\x20message\x20'+_0xf19ce);});}
+    </script>
+</body>
+
+</html>
