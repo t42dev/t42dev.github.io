@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="google-adsense-account" content="ca-pub-1142019306541908">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+  <meta property="og:title" content="flex">
+  <meta property="og:type" content="website">
+  <meta property="og:description" content="Share Flex">
+  <meta property="og:url" content="https://ufa7799.com/">
+  <meta property="og:site_name" content="LIFF Share Flex">
+  <meta property="og:image" content="https://lh3.googleusercontent.com/d/1iu-Afkm6Ij0v6fnNy_gBqVnv79cAu__h">
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://bit.ly/fontiton5" type="text/css" charset="utf-8" /> 
+    <style type="text/css"> 
+        body { 
+            font-family: 'line_seed_sans_th'; 
+        } 
+    </style>
+    <script src="https://cdn.tailwindcss.com"></script> 
+    <title>LIFF Dynamic link Keyword x Dropdown Sheet</title>
+</head>
+<body>
+   <div id="app" class="h-screen w-screen" >
+    <div class="bg-cover bg-no-repeat bg-left h-full w-full"
+       style="background-image: url('https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExMHR1ZzBla2pqYXRrZzdpajlicDl1Njd0cTE3YndvOWJkOWhmN2NldCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/11ASZtb7vdJagM/giphy.gif')"></div>
+  </div>
+  
+  <div id="loading-overlay" class="fixed inset-0 bg-gray-500 bg-opacity-75 z-50 flex items-center justify-center hidden">
+    <img src="https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExZXhwY2M2NjhqenE3eWhrajdpbzFpa2ZwYnFjOTdvMXRzZDNxcGk2MCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/grNkIEN4dkiMXFLIE9/giphy.gif" alt="Loading..." class="w-screen h-auto">
+</div>
+  
+    <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    
+    <script>
+        $(document).ready(function () {
+            var liffId = "2007157458-9D06rypR";
+            initializeLiff(liffId);
+           
+        })
+
+        function initializeLiff(liffId) {
+            liff
+                .init({
+                    liffId: liffId,
+                    withLoginOnExternalBrowser: true,
+                })
+                .then(() => {
+                    if (!liff.isInClient() && !liff.isLoggedIn()) {
+                        window.alert("กรุณาเข้าสู่ระบบบัญชี LINE ของคุณ");
+                        liff.login({ redirectUri: location.href });
+
+                    }
+                    liff.ready.then(() => {
+                      liff.getProfile()
+  .then((profile) => {
+    const name = profile.displayName;
+    const userId = profile.userId;
+    const params = (new URL(document.location)).searchParams;
+    const key = params.get("key");
+
+                       
+    sendToGoogleSheet(userId, name, key)
+  })
+  .catch((err) => {
+    console.log("error", err);
+  });
+                      
+                     
+                       
+                    });
+                })
+                .catch((err) => {
+                    console.log('LIFF Initialization failed ', err);
+                });
+        }
+      
+       
+      
+     
+
+        function sendToGoogleSheet(userId, name,key) {
+        $('#loading-overlay').removeClass('hidden');
+        $.post('https://script.google.com/macros/s/AKfycby9PCwAWEiNxugFdF03naMUTMCf5l2GSnS_WO3H6mMPTRwUFeaeGUCLQbbKblrg9tTX/exec', {
+           
+            userId: userId, 
+            name: name, 
+            key: key
+        })
+        .done(function(response) {
+            $('#loading-overlay').addClass('hidden');
+            var statusCode = response.statusCode;
+            console.log("Status code from response:", statusCode);
+                  if (statusCode === 200) {
+                var flexMessage = response.body;
+                // sendMessages(flexMessage);
+                shareMessages(flexMessage)
+            } else {
+                Swal.fire("ไม่ถูกต้อง", "กรุณาลองใหม่อีกครั้ง", "error")
+                    .then(() => liff.closeWindow());
+            }
+        })
+        .fail(function(error) {
+            console.error("Error sending to Google Sheet:", error);
+            $('#loading-overlay').addClass('hidden');
+            Swal.fire("ผิดพลาด", "กรุณาทำรายการใหม่อีกครั้ง", "error")
+                .then(() => liff.closeWindow());
+        });
+    }
+      function sendMessages(messages) {
+        if (!liff.isInClient()) {
+           Swal.fire("ผิดพลาด", "โปรดใช้เฉพาะมือถือเท่านั้น", "error")
+            console.error("LIFF is not opened inside the LINE app.");
+            return;
+        }
+
+        liff.sendMessages(messages)
+            .then(() => {
+                Swal.fire({
+                    title: "🎉ดำเนินการสำเร็จ🎉",
+                    text: "ทำการส่ง Message เรียบร้อย",
+                    icon: "success",
+                    confirmButtonText: 'ตกลง'
+                }).then(() => {
+                    liff.closeWindow();
+                });
+            })
+            .catch(error => {
+                console.error("Failed to send message:", error);
+                Swal.fire("เกิดข้อผิดพลาด!", "โปรดลองใหม่อีกครั้ง", "error")
+                    .then(() => liff.closeWindow());
+            });
+    }
+      
+      function shareMessages(messages) {
+        if (!liff.isInClient()) {
+           Swal.fire("ผิดพลาด", "โปรดใช้เฉพาะมือถือเท่านั้น", "error")
+            console.error("LIFF is not opened inside the LINE app.");
+            return;
+        }
+
+        liff.shareTargetPicker(messages).then(function (res) {
+    if (res) {
+        Swal.fire({
+                    title: "🎉ดำเนินการสำเร็จ🎉",
+                    text: "ทำการส่ง Message เรียบร้อย",
+                    icon: "success",
+                    confirmButtonText: 'ตกลง'
+                }).then(() => {
+                    liff.closeWindow();
+                });
+    } else {
+     
+      console.log("TargetPicker was closed!");
+    }
+  })
+  .catch(function (error) {
+    
+    console.log("something wrong happen");
+          Swal.fire("เกิดข้อผิดพลาด!", "โปรดลองใหม่อีกครั้ง", "error")
+                    .then(() => liff.closeWindow());
+  });
+           
+    }
+      
+
+    </script>
+</body>
+</html>
